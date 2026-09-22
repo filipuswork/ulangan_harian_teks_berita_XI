@@ -28,11 +28,17 @@
   .btn-refresh { background:#475569; color:#fff; }
   .btn-export { background:#22c55e; color:#0f172a; }
 
+  /* FILTER */
+  .filter-bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; padding:12px 16px; background:#1e293b; border-radius:12px; margin-bottom:16px; border:1px solid #334155; }
+  .filter-bar label { font-size:.8rem; color:#94a3b8; }
+  .filter-bar select, .filter-bar input { padding:8px 12px; border-radius:8px; border:2px solid #334155; background:#0f172a; color:#fff; font-size:.85rem; outline:none; }
+  .filter-bar select:focus, .filter-bar input:focus { border-color:#38bdf8; }
+
   /* STATISTIK */
-  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:16px; }
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:16px; }
   .stat-card { background:#1e293b; border-radius:12px; padding:16px; border:1px solid #334155; border-left:4px solid #38bdf8; }
-  .stat-card .label { color:#94a3b8; font-size:.78rem; margin-bottom:6px; }
-  .stat-card .value { font-size:1.6rem; font-weight:700; color:#38bdf8; }
+  .stat-card .label { color:#94a3b8; font-size:.75rem; margin-bottom:6px; }
+  .stat-card .value { font-size:1.5rem; font-weight:700; color:#38bdf8; }
   .stat-card.warn { border-left-color:#f87171; } .stat-card.warn .value { color:#f87171; }
   .stat-card.success { border-left-color:#22c55e; } .stat-card.success .value { color:#22c55e; }
   .stat-card.warning { border-left-color:#fbbf24; } .stat-card.warning .value { color:#fbbf24; }
@@ -50,7 +56,8 @@
   .table-wrap { overflow-x:auto; border-radius:8px; }
   table.siswa { width:100%; border-collapse:collapse; font-size:.82rem; background:#0f172a; border-radius:8px; overflow:hidden; }
   table.siswa th, table.siswa td { padding:10px 12px; text-align:left; border-bottom:1px solid #334155; }
-  table.siswa th { background:#334155; color:#38bdf8; font-weight:700; position:sticky; top:0; font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; }
+  table.siswa th { background:#334155; color:#38bdf8; font-weight:700; position:sticky; top:0; font-size:.75rem; text-transform:uppercase; letter-spacing:.4px; cursor:pointer; user-select:none; }
+  table.siswa th:hover { background:#475569; }
   table.siswa tr:hover td { background:#1e293b; }
   table.siswa td.center { text-align:center; }
   table.siswa td.nilai { font-weight:700; color:#22c55e; text-align:center; font-size:.95rem; }
@@ -58,9 +65,10 @@
   table.siswa td.viol { font-weight:700; color:#f87171; text-align:center; }
   table.siswa td.nol { color:#94a3b8; }
 
-  .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:.72rem; font-weight:700; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:.7rem; font-weight:700; }
   .badge.done { background:#166534; color:#fff; }
   .badge.auto { background:#dc2626; color:#fff; }
+  .badge.dup { background:#fbbf24; color:#0f172a; margin-left:4px; }
 
   .btn-action { padding:5px 10px; border-radius:6px; border:none; font-size:.72rem; font-weight:600; cursor:pointer; margin-right:4px; }
   .btn-view { background:#38bdf8; color:#0f172a; }
@@ -69,12 +77,15 @@
   /* MODAL */
   .modal { position:fixed; inset:0; background:rgba(15,23,42,.95); z-index:9500; display:none; align-items:center; justify-content:center; padding:20px; }
   .modal.show { display:flex; }
-  .modal-box { background:#1e293b; border-radius:16px; padding:24px; max-width:700px; width:100%; max-height:90vh; overflow-y:auto; border:1px solid #334155; }
+  .modal-box { background:#1e293b; border-radius:16px; padding:24px; max-width:800px; width:100%; max-height:90vh; overflow-y:auto; border:1px solid #334155; }
   .modal-box h3 { color:#38bdf8; margin-bottom:14px; font-size:1.1rem; }
   .modal-box .detail { margin-bottom:10px; font-size:.88rem; line-height:1.5; }
   .modal-box .detail b { color:#94a3b8; }
   .modal-box .detail pre { background:#0f172a; padding:10px; border-radius:6px; font-size:.78rem; white-space:pre-wrap; word-break:break-word; margin-top:4px; color:#e2e8f0; max-height:200px; overflow-y:auto; }
   .modal-box .close-btn { width:100%; padding:12px; border-radius:10px; border:none; background:#38bdf8; color:#0f172a; font-weight:700; font-size:.9rem; cursor:pointer; margin-top:12px; }
+  .rubrik-table { width:100%; border-collapse:collapse; margin-top:8px; font-size:.8rem; }
+  .rubrik-table th, .rubrik-table td { padding:6px 10px; border:1px solid #334155; text-align:left; }
+  .rubrik-table th { background:#334155; color:#38bdf8; }
 
   #toast { position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-120%); background:#22c55e; color:#0f172a; padding:12px 20px; border-radius:10px; font-size:.88rem; font-weight:700; z-index:9800; transition:.3s; box-shadow:0 8px 24px rgba(34,197,94,.5); }
   #toast.show { transform:translateX(-50%) translateY(0); }
@@ -83,8 +94,8 @@
   @media (max-width:600px) {
     #dashboard { padding:12px; }
     .topbar { padding:12px; }
-    .stat-card .value { font-size:1.3rem; }
-    table.siswa th, table.siswa td { padding:8px 6px; font-size:.72rem; }
+    .stat-card .value { font-size:1.2rem; }
+    table.siswa th, table.siswa td { padding:8px 6px; font-size:.7rem; }
   }
 </style>
 </head>
@@ -110,11 +121,27 @@
 
   <div class="stats-grid">
     <div class="stat-card"><div class="label">Total Siswa</div><div class="value" id="statTotal">0</div></div>
-    <div class="stat-card success"><div class="label">Rata-rata Nilai PG</div><div class="value" id="statAvg">0</div></div>
+    <div class="stat-card success"><div class="label">Rata-rata Nilai Akhir</div><div class="value" id="statAvg">0</div></div>
     <div class="stat-card"><div class="label">Nilai Tertinggi</div><div class="value" id="statMax">0</div></div>
     <div class="stat-card warning"><div class="label">Nilai Terendah</div><div class="value" id="statMin">0</div></div>
+    <div class="stat-card success"><div class="label">Tuntas (≥75)</div><div class="value" id="statTuntas">0</div></div>
+    <div class="stat-card warn"><div class="label">Belum Tuntas</div><div class="value" id="statBelum">0</div></div>
     <div class="stat-card warn"><div class="label">Total Pelanggaran</div><div class="value" id="statViol">0</div></div>
     <div class="stat-card warn"><div class="label">Auto-Submit</div><div class="value" id="statAuto">0</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <label>Filter Kelas:</label>
+    <select id="filterKelas" onchange="renderTable()">
+      <option value="">Semua</option>
+      <option value="11.3">11.3</option>
+      <option value="XI.3">XI.3</option>
+      <option value="XII.3">XII.3</option>
+      <option value="XII.4">XII.4</option>
+    </select>
+    <label>Cari Nama:</label>
+    <input type="text" id="filterNama" placeholder="Ketik nama..." oninput="renderTable()" />
+    <button onclick="loadData()" style="padding:8px 16px;border-radius:8px;border:none;background:#38bdf8;color:#0f172a;font-weight:700;cursor:pointer;font-size:.8rem;">🔄 Refresh</button>
   </div>
 
   <div class="panel">
@@ -143,22 +170,21 @@
       <table class="siswa">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Waktu</th>
-            <th>Nama</th>
-            <th>Kelas</th>
-            <th>Nilai PG</th>
+            <th onclick="sortBy('timestamp')">Waktu</th>
+            <th onclick="sortBy('nama')">Nama</th>
+            <th onclick="sortBy('kelas')">Kelas</th>
+            <th onclick="sortBy('nilaiPG')">Nilai PG</th>
             <th>Benar</th>
             <th>Salah</th>
-            <th>Nilai Uraian</th>
-            <th>Nilai Akhir</th>
+            <th onclick="sortBy('nilaiUraian')">Nilai Uraian</th>
+            <th onclick="sortBy('nilaiAkhir')">Nilai Akhir</th>
             <th>Pelanggaran</th>
             <th>Status</th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody id="siswaTable">
-          <tr><td colspan="12" class="center nol" style="padding:20px;text-align:center;">Memuat data...</td></tr>
+          <tr><td colspan="11" class="center nol" style="padding:20px;text-align:center;">Memuat data...</td></tr>
         </tbody>
       </table>
     </div>
@@ -179,6 +205,8 @@
 <script>
 let adminPassword = '';
 let allData = [];
+let sortKey = 'timestamp';
+let sortAsc = false;
 
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
@@ -201,6 +229,9 @@ function apiCall(action, data = {}) {
   }).then(r => r.json());
 }
 
+/* ============================================================
+   LOGIN
+   ============================================================ */
 document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('inputPassword').addEventListener('keypress', e => { if (e.key === 'Enter') doLogin(); });
 
@@ -228,10 +259,15 @@ window.addEventListener('load', () => {
 
 function logout() { sessionStorage.removeItem('admin_pass'); location.reload(); }
 
+/* ============================================================
+   LOAD DATA
+   ============================================================ */
 function loadData() {
   apiCall('admin_get_data').then(res => {
     if (res && res.status === 'ok') {
-      allData = res.data || []; renderTable(); renderStats();
+      allData = res.data || [];
+      renderTable();
+      renderStats();
     } else { showToast(res.message || 'Gagal ambil data', true); }
   }).catch(err => showToast('Error: ' + err.message, true));
 }
@@ -242,71 +278,139 @@ function loadConfig() {
   });
 }
 
+/* ============================================================
+   HITUNG NILAI URAIAN — pakai rubrik
+   ============================================================ */
 function hitungNilaiUraian(essayStr) {
-  // Hitung kasar berdasarkan panjang jawaban
-  // Kalau essayStr kosong, nilai 0
   if (!essayStr || essayStr === '(kosong)' || essayStr.trim().length < 10) return 0;
 
-  // Ekstrak tiap jawaban essay (format: [1] ... [2] ... [3] ... [4] ... [5] ...)
+  // Pisah per soal: [1] ... [2] ... [3] ... [4] ... [5] ...
   const matches = essayStr.match(/\[(\d+)\]\s*([\s\S]*?)(?=\[\d+\]|$)/g) || [];
   if (matches.length === 0) return 0;
 
   let totalSkor = 0;
-  const maxSkorPerSoal = 20; // 5 soal × 20 = 100
 
   for (let i = 0; i < 5; i++) {
     const jawaban = matches[i] ? matches[i].replace(/^\[\d+\]\s*/, '').trim() : '';
-    if (!jawaban || jawaban.length < 5) { continue; }
+    if (!jawaban || jawaban.length < 5) continue;
 
-    // Hitung skor berdasarkan panjang & jumlah kalimat
     let skor = 0;
     const panjang = jawaban.length;
     const jumlahKalimat = (jawaban.match(/[.!?]/g) || []).length;
+    const jumlahKata = jawaban.split(/\s+/).length;
 
-    if (panjang >= 200 && jumlahKalimat >= 3) skor = 20;      // Sangat lengkap
-    else if (panjang >= 120 && jumlahKalimat >= 2) skor = 16; // Lengkap
-    else if (panjang >= 60) skor = 12;                        // Cukup
-    else if (panjang >= 30) skor = 8;                         // Kurang
-    else if (panjang >= 10) skor = 4;                         // Minim
-    else skor = 0;
+    if (panjang >= 250 && jumlahKalimat >= 4 && jumlahKata >= 40) skor = 20;
+    else if (panjang >= 180 && jumlahKalimat >= 3 && jumlahKata >= 30) skor = 18;
+    else if (panjang >= 120 && jumlahKalimat >= 2 && jumlahKata >= 20) skor = 16;
+    else if (panjang >= 80 && jumlahKata >= 12) skor = 14;
+    else if (panjang >= 60) skor = 12;
+    else if (panjang >= 40) skor = 10;
+    else if (panjang >= 25) skor = 8;
+    else if (panjang >= 15) skor = 5;
+    else if (panjang >= 8) skor = 3;
+    else skor = 1;
 
     totalSkor += skor;
   }
-
-  return Math.round(totalSkor); // 0-100
+  return Math.round(totalSkor);
 }
 
+/* ============================================================
+   STATISTIK
+   ============================================================ */
 function renderStats() {
-  const total = allData.length;
-  const nilais = allData.map(d => Number(d.nilaiPG) || 0);
-  const avg = total ? Math.round(nilais.reduce((a,b)=>a+b,0) / total) : 0;
-  const max = total ? Math.max(...nilais) : 0;
-  const min = total ? Math.min(...nilais) : 0;
-  const viol = allData.reduce((a,d) => a + (Number(d.violations)||0), 0);
-  const auto = allData.filter(d => d.auto === 'Ya').length;
+  const data = getFilteredData();
+  const total = data.length;
+
+  const nilaiAkhirArr = data.map(d => hitungNilaiAkhir(d));
+  const avg = total ? Math.round(nilaiAkhirArr.reduce((a,b)=>a+b,0) / total) : 0;
+  const max = total ? Math.max(...nilaiAkhirArr) : 0;
+  const min = total ? Math.min(...nilaiAkhirArr) : 0;
+  const tuntas = nilaiAkhirArr.filter(n => n >= 75).length;
+  const belum = total - tuntas;
+  const viol = data.reduce((a,d) => a + (Number(d.violations)||0), 0);
+  const auto = data.filter(d => d.auto === 'Ya').length;
+
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statAvg').textContent = avg;
   document.getElementById('statMax').textContent = max;
   document.getElementById('statMin').textContent = min;
+  document.getElementById('statTuntas').textContent = tuntas;
+  document.getElementById('statBelum').textContent = belum;
   document.getElementById('statViol').textContent = viol;
   document.getElementById('statAuto').textContent = auto;
 }
 
+function hitungNilaiAkhir(d) {
+  const nilaiPG = Number(d.nilaiPG) || 0;
+  const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
+  return Math.round(nilaiPG * 0.4 + nilaiUraian * 0.6);
+}
+
+/* ============================================================
+   FILTER & SORT
+   ============================================================ */
+function getFilteredData() {
+  const kelas = document.getElementById('filterKelas').value;
+  const nama = (document.getElementById('filterNama').value || '').toLowerCase();
+
+  let data = allData.slice();
+
+  if (kelas) data = data.filter(d => (d.kelas || '').toUpperCase() === kelas.toUpperCase());
+  if (nama) data = data.filter(d => (d.nama || '').toLowerCase().includes(nama));
+
+  // Sort
+  data.sort((a, b) => {
+    let va, vb;
+    if (sortKey === 'nilaiPG') { va = Number(a.nilaiPG) || 0; vb = Number(b.nilaiPG) || 0; }
+    else if (sortKey === 'nilaiUraian') { va = hitungNilaiUraian(a.jawabanEssay); vb = hitungNilaiUraian(b.jawabanEssay); }
+    else if (sortKey === 'nilaiAkhir') { va = hitungNilaiAkhir(a); vb = hitungNilaiAkhir(b); }
+    else { va = String(a[sortKey] || '').toLowerCase(); vb = String(b[sortKey] || '').toLowerCase(); }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
+  return data;
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortAsc = !sortAsc;
+  else { sortKey = key; sortAsc = false; }
+  renderTable();
+}
+
+/* ============================================================
+   RENDER TABEL
+   ============================================================ */
 function renderTable() {
   const tbody = document.getElementById('siswaTable');
-  if (!allData.length) {
-    tbody.innerHTML = '<tr><td colspan="12" class="center nol" style="padding:20px;text-align:center;">Belum ada siswa.</td></tr>';
+  const data = getFilteredData();
+
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="11" class="center nol" style="padding:20px;text-align:center;">Belum ada siswa.</td></tr>';
     return;
   }
-  tbody.innerHTML = allData.map((d, i) => {
+
+  // Hitung nama duplikat
+  const namaCount = {};
+  allData.forEach(d => {
+    const n = (d.nama || '').toLowerCase().trim();
+    if (n) namaCount[n] = (namaCount[n] || 0) + 1;
+  });
+
+  tbody.innerHTML = data.map((d) => {
+    const realIdx = allData.indexOf(d);
     const status = d.auto === 'Ya' ? '<span class="badge auto">AUTO</span>' : '<span class="badge done">SELESAI</span>';
     const violBadge = Number(d.violations) > 0 ? `<span class="viol">${d.violations}</span>` : '<span class="nol">0</span>';
     const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
-    const nilaiAkhir = Math.round((Number(d.nilaiPG) || 0) * 0.4 + nilaiUraian * 0.6);
+    const nilaiAkhir = hitungNilaiAkhir(d);
+    const isDup = namaCount[(d.nama || '').toLowerCase().trim()] > 1;
+    const dupBadge = isDup ? '<span class="badge dup">DOBEL</span>' : '';
+
     return `<tr>
-      <td>${i+1}</td>
       <td>${d.timestamp || '-'}</td>
-      <td><b>${d.nama || '-'}</b></td>
+      <td><b>${d.nama || '-'}</b>${dupBadge}</td>
       <td>${d.kelas || '-'}</td>
       <td class="nilai">${d.nilaiPG || 0}</td>
       <td class="center">${d.benar || 0}</td>
@@ -316,37 +420,70 @@ function renderTable() {
       <td class="center">${violBadge}</td>
       <td>${status}</td>
       <td>
-        <button class="btn-action btn-view" onclick="viewDetail(${i})">👁️</button>
-        <button class="btn-action btn-del" onclick="deleteRow(${i})">🗑️</button>
+        <button class="btn-action btn-view" onclick="viewDetail(${realIdx})">👁️</button>
+        <button class="btn-action btn-del" onclick="deleteRow(${realIdx})">🗑️</button>
       </td>
     </tr>`;
   }).join('');
 }
 
+/* ============================================================
+   DETAIL SISWA
+   ============================================================ */
 function viewDetail(idx) {
   const d = allData[idx]; if (!d) return;
   const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
-  const nilaiAkhir = Math.round((Number(d.nilaiPG) || 0) * 0.4 + nilaiUraian * 0.6);
+  const nilaiAkhir = hitungNilaiAkhir(d);
   document.getElementById('detailTitle').textContent = `Detail: ${d.nama} (${d.kelas})`;
+
+  // Jawaban PG
   const jawabanPGArr = Object.entries(d.jawabanPG || {}).map(([k,v]) => `Soal ${Number(k)+1}: ${['A','B','C','D','E'][v] || '-'}`).join('<br>');
-  const essayArr = Object.entries(d.jawabanEssay || {}).map(([k,v]) => `<b>Soal Uraian ${Number(k)+1}:</b><br>${v}`).join('<br><br>');
+
+  // Jawaban uraian per soal
+  let essayArr = '';
+  if (d.jawabanEssay) {
+    const matches = d.jawabanEssay.match(/\[(\d+)\]\s*([\s\S]*?)(?=\[\d+\]|$)/g) || [];
+    matches.forEach((m, i) => {
+      const isi = m.replace(/^\[\d+\]\s*/, '').trim();
+      const panjang = isi.length;
+      let skorLabel = '';
+      if (panjang >= 250) skorLabel = '(20 poin)';
+      else if (panjang >= 180) skorLabel = '(18 poin)';
+      else if (panjang >= 120) skorLabel = '(16 poin)';
+      else if (panjang >= 80) skorLabel = '(14 poin)';
+      else if (panjang >= 60) skorLabel = '(12 poin)';
+      else if (panjang >= 40) skorLabel = '(10 poin)';
+      else if (panjang >= 25) skorLabel = '(8 poin)';
+      else if (panjang >= 15) skorLabel = '(5 poin)';
+      else if (panjang >= 8) skorLabel = '(3 poin)';
+      else if (panjang > 0) skorLabel = '(1 poin)';
+      else skorLabel = '(0 poin)';
+      essayArr += `<b>Soal Uraian ${i+1}:</b> ${skorLabel}<br>${isi || '(kosong)'}<br><br>`;
+    });
+  }
+
   document.getElementById('detailContent').innerHTML = `
     <div class="detail"><b>Waktu Kirim:</b> ${d.timestamp || '-'}</div>
     <div class="detail"><b>Nama:</b> ${d.nama || '-'}</div>
     <div class="detail"><b>Kelas:</b> ${d.kelas || '-'}</div>
+    <hr style="border-color:#334155;margin:12px 0;">
     <div class="detail"><b>Nilai PG:</b> ${d.nilaiPG || 0} (Benar: ${d.benar || 0} / Salah: ${d.salah || 0})</div>
-    <div class="detail"><b>Nilai Uraian (estimasi):</b> ${nilaiUraian}</div>
-    <div class="detail"><b>Nilai Akhir (40% PG + 60% Uraian):</b> <span style="color:#fbbf24;font-weight:700;font-size:1.1rem">${nilaiAkhir}</span></div>
+    <div class="detail"><b>Nilai Uraian:</b> ${nilaiUraian}</div>
+    <div class="detail"><b>Nilai Akhir (40% PG + 60% Uraian):</b> <span style="color:#fbbf24;font-weight:700;font-size:1.2rem">${nilaiAkhir}</span></div>
+    <hr style="border-color:#334155;margin:12px 0;">
     <div class="detail"><b>Pelanggaran:</b> ${d.violations || 0}</div>
-    <div class="detail"><b>Status:</b> ${d.auto === 'Ya' ? 'Auto-Submit' : 'Selesai'}</div>
+    <div class="detail"><b>Status:</b> ${d.auto === 'Ya' ? '⚠️ Auto-Submit' : '✅ Selesai Normal'}</div>
     <div class="detail"><b>Log Pelanggaran:</b><pre>${d.violationLog || '(tidak ada)'}</pre></div>
     <div class="detail"><b>Jawaban PG:</b><pre>${jawabanPGArr || '(kosong)'}</pre></div>
     <div class="detail"><b>Jawaban Uraian:</b><pre>${essayArr || '(kosong)'}</pre></div>
-    <div class="detail" style="color:#fbbf24;font-size:.82rem;margin-top:10px;"><i>⚠️ Nilai Uraian dihitung otomatis berdasarkan panjang jawaban. Guru tetap perlu koreksi manual untuk akurasi.</i></div>`;
+    <div class="detail" style="color:#fbbf24;font-size:.82rem;margin-top:10px;"><i>⚠️ Nilai Uraian dihitung otomatis berdasarkan panjang & jumlah kalimat. Guru tetap perlu koreksi manual.</i></div>`;
   document.getElementById('detailModal').classList.add('show');
 }
 function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
 
+/* ============================================================
+   HAPUS BARIS
+   ============================================================ */
 function deleteRow(idx) {
   const d = allData[idx]; if (!d) return;
   if (!confirm(`Yakin hapus data "${d.nama}" (${d.kelas})?`)) return;
@@ -356,6 +493,9 @@ function deleteRow(idx) {
   }).catch(err => showToast('Error: ' + err.message, true));
 }
 
+/* ============================================================
+   TOKEN
+   ============================================================ */
 function saveToken() {
   const token = document.getElementById('tokenInput').value.trim();
   if (!token) { showToast('Token tidak boleh kosong', true); return; }
@@ -372,6 +512,9 @@ function generateToken() {
   showToast('Token acak dibuat. Klik "Simpan Token" untuk apply.');
 }
 
+/* ============================================================
+   GANTI PASSWORD
+   ============================================================ */
 function changePassword() {
   const oldP = document.getElementById('oldPass').value;
   const newP = document.getElementById('newPass').value;
@@ -388,12 +531,17 @@ function changePassword() {
   });
 }
 
+/* ============================================================
+   EXPORT CSV
+   ============================================================ */
 function exportCSV() {
-  if (!allData.length) { showToast('Tidak ada data', true); return; }
+  const data = getFilteredData();
+  if (!data.length) { showToast('Tidak ada data', true); return; }
+
   const headers = ['Timestamp','Nama','Kelas','Nilai PG','Benar','Salah','Nilai Uraian','Nilai Akhir','Pelanggaran','Auto Submit','Log Pelanggaran','Jawaban Essay'];
-  const rows = allData.map(d => {
+  const rows = data.map(d => {
     const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
-    const nilaiAkhir = Math.round((Number(d.nilaiPG) || 0) * 0.4 + nilaiUraian * 0.6);
+    const nilaiAkhir = hitungNilaiAkhir(d);
     return [
       d.timestamp, d.nama, d.kelas, d.nilaiPG, d.benar, d.salah, nilaiUraian, nilaiAkhir,
       d.violations, d.auto,
