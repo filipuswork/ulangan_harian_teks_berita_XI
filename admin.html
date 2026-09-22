@@ -7,14 +7,18 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Segoe UI', system-ui, sans-serif; background:#0f172a; color:#e2e8f0; min-height:100vh; }
+
+  /* LOGIN */
   #loginScreen { position:fixed; inset:0; background:linear-gradient(135deg,#1e293b,#0f172a); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; }
   #loginScreen h1 { font-size:1.8rem; margin-bottom:8px; color:#38bdf8; }
   #loginScreen p { color:#94a3b8; margin-bottom:24px; font-size:.9rem; }
   #loginScreen input { width:100%; max-width:360px; padding:14px 16px; border-radius:12px; border:2px solid #334155; background:#1e293b; color:#fff; font-size:1rem; margin-bottom:12px; outline:none; }
   #loginScreen input:focus { border-color:#38bdf8; }
   #loginScreen button { width:100%; max-width:360px; padding:14px; border-radius:12px; border:none; background:#38bdf8; color:#0f172a; font-weight:700; font-size:1rem; cursor:pointer; }
+  #loginScreen button:active { transform:scale(.98); }
   #loginScreen .error { color:#f87171; font-size:.85rem; margin-top:8px; min-height:20px; }
 
+  /* DASHBOARD */
   #dashboard { display:none; padding:20px; max-width:1400px; margin:0 auto; }
   .topbar { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:#1e293b; border-radius:12px; margin-bottom:16px; border:1px solid #334155; flex-wrap:wrap; gap:12px; }
   .topbar h1 { font-size:1.2rem; color:#38bdf8; }
@@ -24,6 +28,7 @@
   .btn-refresh { background:#475569; color:#fff; }
   .btn-export { background:#22c55e; color:#0f172a; }
 
+  /* STATISTIK */
   .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:16px; }
   .stat-card { background:#1e293b; border-radius:12px; padding:16px; border:1px solid #334155; border-left:4px solid #38bdf8; }
   .stat-card .label { color:#94a3b8; font-size:.78rem; margin-bottom:6px; }
@@ -32,6 +37,7 @@
   .stat-card.success { border-left-color:#22c55e; } .stat-card.success .value { color:#22c55e; }
   .stat-card.warning { border-left-color:#fbbf24; } .stat-card.warning .value { color:#fbbf24; }
 
+  /* PANEL */
   .panel { background:#1e293b; border-radius:12px; padding:16px; border:1px solid #334155; margin-bottom:16px; }
   .panel h2 { font-size:1rem; color:#38bdf8; margin-bottom:12px; }
   .panel .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
@@ -40,13 +46,15 @@
   .panel .row button { padding:10px 18px; border-radius:8px; border:none; background:#38bdf8; color:#0f172a; font-weight:700; font-size:.85rem; cursor:pointer; }
   .panel .hint { font-size:.78rem; color:#94a3b8; margin-top:8px; }
 
+  /* TABEL */
   .table-wrap { overflow-x:auto; border-radius:8px; }
   table.siswa { width:100%; border-collapse:collapse; font-size:.82rem; background:#0f172a; border-radius:8px; overflow:hidden; }
   table.siswa th, table.siswa td { padding:10px 12px; text-align:left; border-bottom:1px solid #334155; }
   table.siswa th { background:#334155; color:#38bdf8; font-weight:700; position:sticky; top:0; font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; }
   table.siswa tr:hover td { background:#1e293b; }
   table.siswa td.center { text-align:center; }
-  table.siswa td.nilai { font-weight:700; color:#22c55e; text-align:center; }
+  table.siswa td.nilai { font-weight:700; color:#22c55e; text-align:center; font-size:.95rem; }
+  table.siswa td.nilai-akhir { font-weight:700; color:#fbbf24; text-align:center; font-size:1rem; }
   table.siswa td.viol { font-weight:700; color:#f87171; text-align:center; }
   table.siswa td.nol { color:#94a3b8; }
 
@@ -58,6 +66,7 @@
   .btn-view { background:#38bdf8; color:#0f172a; }
   .btn-del { background:#dc2626; color:#fff; }
 
+  /* MODAL */
   .modal { position:fixed; inset:0; background:rgba(15,23,42,.95); z-index:9500; display:none; align-items:center; justify-content:center; padding:20px; }
   .modal.show { display:flex; }
   .modal-box { background:#1e293b; border-radius:16px; padding:24px; max-width:700px; width:100%; max-height:90vh; overflow-y:auto; border:1px solid #334155; }
@@ -75,7 +84,7 @@
     #dashboard { padding:12px; }
     .topbar { padding:12px; }
     .stat-card .value { font-size:1.3rem; }
-    table.siswa th, table.siswa td { padding:8px 6px; font-size:.75rem; }
+    table.siswa th, table.siswa td { padding:8px 6px; font-size:.72rem; }
   }
 </style>
 </head>
@@ -129,18 +138,27 @@
   </div>
 
   <div class="panel">
-    <h2>👥 Aktivitas Siswa (Real-time)</h2>
+    <h2>👥 Aktivitas Siswa</h2>
     <div class="table-wrap">
       <table class="siswa">
         <thead>
           <tr>
-            <th>#</th><th>Waktu</th><th>Nama</th><th>Kelas</th>
-            <th>Nilai PG</th><th>Benar</th><th>Salah</th>
-            <th>Pelanggaran</th><th>Status</th><th>Aksi</th>
+            <th>#</th>
+            <th>Waktu</th>
+            <th>Nama</th>
+            <th>Kelas</th>
+            <th>Nilai PG</th>
+            <th>Benar</th>
+            <th>Salah</th>
+            <th>Nilai Uraian</th>
+            <th>Nilai Akhir</th>
+            <th>Pelanggaran</th>
+            <th>Status</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody id="siswaTable">
-          <tr><td colspan="10" class="center nol" style="padding:20px;text-align:center;">Memuat data...</td></tr>
+          <tr><td colspan="12" class="center nol" style="padding:20px;text-align:center;">Memuat data...</td></tr>
         </tbody>
       </table>
     </div>
@@ -224,6 +242,40 @@ function loadConfig() {
   });
 }
 
+function hitungNilaiUraian(essayStr) {
+  // Hitung kasar berdasarkan panjang jawaban
+  // Kalau essayStr kosong, nilai 0
+  if (!essayStr || essayStr === '(kosong)' || essayStr.trim().length < 10) return 0;
+
+  // Ekstrak tiap jawaban essay (format: [1] ... [2] ... [3] ... [4] ... [5] ...)
+  const matches = essayStr.match(/\[(\d+)\]\s*([\s\S]*?)(?=\[\d+\]|$)/g) || [];
+  if (matches.length === 0) return 0;
+
+  let totalSkor = 0;
+  const maxSkorPerSoal = 20; // 5 soal × 20 = 100
+
+  for (let i = 0; i < 5; i++) {
+    const jawaban = matches[i] ? matches[i].replace(/^\[\d+\]\s*/, '').trim() : '';
+    if (!jawaban || jawaban.length < 5) { continue; }
+
+    // Hitung skor berdasarkan panjang & jumlah kalimat
+    let skor = 0;
+    const panjang = jawaban.length;
+    const jumlahKalimat = (jawaban.match(/[.!?]/g) || []).length;
+
+    if (panjang >= 200 && jumlahKalimat >= 3) skor = 20;      // Sangat lengkap
+    else if (panjang >= 120 && jumlahKalimat >= 2) skor = 16; // Lengkap
+    else if (panjang >= 60) skor = 12;                        // Cukup
+    else if (panjang >= 30) skor = 8;                         // Kurang
+    else if (panjang >= 10) skor = 4;                         // Minim
+    else skor = 0;
+
+    totalSkor += skor;
+  }
+
+  return Math.round(totalSkor); // 0-100
+}
+
 function renderStats() {
   const total = allData.length;
   const nilais = allData.map(d => Number(d.nilaiPG) || 0);
@@ -243,18 +295,26 @@ function renderStats() {
 function renderTable() {
   const tbody = document.getElementById('siswaTable');
   if (!allData.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="center nol" style="padding:20px;text-align:center;">Belum ada siswa.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" class="center nol" style="padding:20px;text-align:center;">Belum ada siswa.</td></tr>';
     return;
   }
   tbody.innerHTML = allData.map((d, i) => {
     const status = d.auto === 'Ya' ? '<span class="badge auto">AUTO</span>' : '<span class="badge done">SELESAI</span>';
     const violBadge = Number(d.violations) > 0 ? `<span class="viol">${d.violations}</span>` : '<span class="nol">0</span>';
+    const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
+    const nilaiAkhir = Math.round((Number(d.nilaiPG) || 0) * 0.4 + nilaiUraian * 0.6);
     return `<tr>
-      <td>${i+1}</td><td>${d.timestamp || '-'}</td>
-      <td><b>${d.nama || '-'}</b></td><td>${d.kelas || '-'}</td>
+      <td>${i+1}</td>
+      <td>${d.timestamp || '-'}</td>
+      <td><b>${d.nama || '-'}</b></td>
+      <td>${d.kelas || '-'}</td>
       <td class="nilai">${d.nilaiPG || 0}</td>
-      <td class="center">${d.benar || 0}</td><td class="center">${d.salah || 0}</td>
-      <td class="center">${violBadge}</td><td>${status}</td>
+      <td class="center">${d.benar || 0}</td>
+      <td class="center">${d.salah || 0}</td>
+      <td class="nilai">${nilaiUraian}</td>
+      <td class="nilai-akhir">${nilaiAkhir}</td>
+      <td class="center">${violBadge}</td>
+      <td>${status}</td>
       <td>
         <button class="btn-action btn-view" onclick="viewDetail(${i})">👁️</button>
         <button class="btn-action btn-del" onclick="deleteRow(${i})">🗑️</button>
@@ -265,6 +325,8 @@ function renderTable() {
 
 function viewDetail(idx) {
   const d = allData[idx]; if (!d) return;
+  const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
+  const nilaiAkhir = Math.round((Number(d.nilaiPG) || 0) * 0.4 + nilaiUraian * 0.6);
   document.getElementById('detailTitle').textContent = `Detail: ${d.nama} (${d.kelas})`;
   const jawabanPGArr = Object.entries(d.jawabanPG || {}).map(([k,v]) => `Soal ${Number(k)+1}: ${['A','B','C','D','E'][v] || '-'}`).join('<br>');
   const essayArr = Object.entries(d.jawabanEssay || {}).map(([k,v]) => `<b>Soal Uraian ${Number(k)+1}:</b><br>${v}`).join('<br><br>');
@@ -272,13 +334,15 @@ function viewDetail(idx) {
     <div class="detail"><b>Waktu Kirim:</b> ${d.timestamp || '-'}</div>
     <div class="detail"><b>Nama:</b> ${d.nama || '-'}</div>
     <div class="detail"><b>Kelas:</b> ${d.kelas || '-'}</div>
-    <div class="detail"><b>Nilai PG:</b> ${d.nilaiPG || 0}</div>
-    <div class="detail"><b>Benar / Salah:</b> ${d.benar || 0} / ${d.salah || 0}</div>
+    <div class="detail"><b>Nilai PG:</b> ${d.nilaiPG || 0} (Benar: ${d.benar || 0} / Salah: ${d.salah || 0})</div>
+    <div class="detail"><b>Nilai Uraian (estimasi):</b> ${nilaiUraian}</div>
+    <div class="detail"><b>Nilai Akhir (40% PG + 60% Uraian):</b> <span style="color:#fbbf24;font-weight:700;font-size:1.1rem">${nilaiAkhir}</span></div>
     <div class="detail"><b>Pelanggaran:</b> ${d.violations || 0}</div>
     <div class="detail"><b>Status:</b> ${d.auto === 'Ya' ? 'Auto-Submit' : 'Selesai'}</div>
     <div class="detail"><b>Log Pelanggaran:</b><pre>${d.violationLog || '(tidak ada)'}</pre></div>
     <div class="detail"><b>Jawaban PG:</b><pre>${jawabanPGArr || '(kosong)'}</pre></div>
-    <div class="detail"><b>Jawaban Uraian:</b><pre>${essayArr || '(kosong)'}</pre></div>`;
+    <div class="detail"><b>Jawaban Uraian:</b><pre>${essayArr || '(kosong)'}</pre></div>
+    <div class="detail" style="color:#fbbf24;font-size:.82rem;margin-top:10px;"><i>⚠️ Nilai Uraian dihitung otomatis berdasarkan panjang jawaban. Guru tetap perlu koreksi manual untuk akurasi.</i></div>`;
   document.getElementById('detailModal').classList.add('show');
 }
 function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
@@ -326,12 +390,17 @@ function changePassword() {
 
 function exportCSV() {
   if (!allData.length) { showToast('Tidak ada data', true); return; }
-  const headers = ['Timestamp','Nama','Kelas','Nilai PG','Benar','Salah','Pelanggaran','Auto Submit','Log Pelanggaran','Jawaban Essay'];
-  const rows = allData.map(d => [
-    d.timestamp, d.nama, d.kelas, d.nilaiPG, d.benar, d.salah, d.violations, d.auto,
-    `"${(d.violationLog || '').replace(/"/g,'""')}"`,
-    `"${(d.jawabanEssay || '').replace(/"/g,'""').replace(/\n/g,' ')}"`
-  ]);
+  const headers = ['Timestamp','Nama','Kelas','Nilai PG','Benar','Salah','Nilai Uraian','Nilai Akhir','Pelanggaran','Auto Submit','Log Pelanggaran','Jawaban Essay'];
+  const rows = allData.map(d => {
+    const nilaiUraian = hitungNilaiUraian(d.jawabanEssay);
+    const nilaiAkhir = Math.round((Number(d.nilaiPG) || 0) * 0.4 + nilaiUraian * 0.6);
+    return [
+      d.timestamp, d.nama, d.kelas, d.nilaiPG, d.benar, d.salah, nilaiUraian, nilaiAkhir,
+      d.violations, d.auto,
+      `"${(d.violationLog || '').replace(/"/g,'""')}"`,
+      `"${(d.jawabanEssay || '').replace(/"/g,'""').replace(/\n/g,' ')}"`
+    ];
+  });
   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
   const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);

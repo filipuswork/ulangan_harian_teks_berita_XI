@@ -8,7 +8,7 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { font-family:'Segoe UI', system-ui, -apple-system, sans-serif; background:#0f172a; color:#e2e8f0; -webkit-user-select:none; user-select:none; overflow-x:hidden; }
-  #lockScreen { position:fixed; inset:0; background:linear-gradient(135deg,#1e293b,#0f172a); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; }
+  #lockScreen { position:fixed; inset:0; background:linear-gradient(135deg,#1e293b,#0f172a); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; overflow-y:auto; }
   #lockScreen h1 { font-size:1.6rem; margin-bottom:8px; color:#38bdf8; }
   #lockScreen p { color:#94a3b8; margin-bottom:24px; font-size:.9rem; line-height:1.5; max-width:420px; }
   #lockScreen input { width:100%; max-width:320px; padding:14px 16px; border-radius:12px; border:2px solid #334155; background:#1e293b; color:#fff; font-size:1rem; margin-bottom:12px; outline:none; }
@@ -25,32 +25,56 @@
   #examHeader .stats { color:#94a3b8; }
   #examHeader .stats span { color:#f87171; font-weight:700; }
 
-  #examContent { display:none; padding:14px; max-width:900px; margin:0 auto; }
-  .kop { text-align:center; border-bottom:2px double #475569; padding-bottom:10px; margin-bottom:14px; }
-  .kop h1 { font-size:1.1rem; color:#38bdf8; }
-  .kop h2 { font-size:.95rem; margin-top:2px; }
-  .kop p { font-size:.8rem; color:#94a3b8; margin-top:2px; font-style:italic; }
+  #progressBarWrap { position:sticky; top:56px; z-index:49; background:#0f172a; padding:8px 14px; border-bottom:1px solid #334155; }
+  #progressBarWrap .labels { display:flex; justify-content:space-between; font-size:.75rem; color:#94a3b8; margin-bottom:5px; }
+  #progressBarWrap .labels b { color:#38bdf8; }
+  #progressBar { width:100%; height:6px; background:#1e293b; border-radius:3px; overflow:hidden; }
+  #progressFill { height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#22c55e); transition:width .3s; }
 
-  .section-title { background:#1e293b; padding:8px 12px; border-radius:8px; margin:16px 0 10px; font-weight:700; font-size:.9rem; color:#38bdf8; border-left:4px solid #38bdf8; }
-
-  .question { background:#1e293b; border-radius:10px; padding:14px; margin-bottom:12px; border:1px solid #334155; }
-  .question .q-text { font-size:.9rem; line-height:1.5; margin-bottom:10px; }
+  #examContent { display:none; padding:14px; max-width:900px; margin:0 auto; padding-bottom:120px; }
+  .question-page { display:none; }
+  .question-page.active { display:block; animation:fadeIn .25s; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .question { background:#1e293b; border-radius:12px; padding:18px; border:1px solid #334155; min-height:60vh; }
+  .question .q-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #334155; }
+  .question .q-badge { background:#0c4a6e; color:#38bdf8; font-weight:700; font-size:.75rem; padding:4px 10px; border-radius:20px; letter-spacing:.5px; }
+  .question .q-type { font-size:.75rem; color:#94a3b8; }
+  .question .q-text { font-size:1rem; line-height:1.6; margin-bottom:16px; }
   .question .q-number { color:#38bdf8; font-weight:700; margin-right:4px; }
-  .question .teks { display:block; margin:8px 0; padding:10px 12px; background:#0f172a; border-left:3px solid #64748b; font-style:italic; font-size:.82rem; border-radius:0 6px 6px 0; line-height:1.5; }
-  .options { list-style:none; display:flex; flex-direction:column; gap:8px; }
-  .options li { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#0f172a; border-radius:8px; border:2px solid #334155; cursor:pointer; transition:.15s; font-size:.85rem; line-height:1.4; }
+  .question .teks { display:block; margin:10px 0; padding:12px 14px; background:#0f172a; border-left:3px solid #64748b; font-style:italic; font-size:.88rem; border-radius:0 6px 6px 0; line-height:1.6; }
+  .options { list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .options li { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; background:#0f172a; border-radius:10px; border:2px solid #334155; cursor:pointer; transition:.15s; font-size:.92rem; line-height:1.5; }
   .options li:active { transform:scale(.99); }
   .options li.selected { border-color:#38bdf8; background:#0c4a6e; }
-  .options li .label { display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; border-radius:50%; background:#334155; font-weight:700; font-size:.75rem; flex-shrink:0; }
   .options li.selected .label { background:#38bdf8; color:#0f172a; }
+  .options li .label { display:inline-flex; align-items:center; justify-content:center; min-width:26px; height:26px; border-radius:50%; background:#334155; font-weight:700; font-size:.8rem; flex-shrink:0; }
 
-  .essay-item { background:#1e293b; border-radius:10px; padding:14px; margin-bottom:12px; border:1px solid #334155; }
-  .essay-item .q-text { font-size:.9rem; line-height:1.5; margin-bottom:10px; }
-  .essay-item textarea { width:100%; min-height:90px; padding:10px; border-radius:8px; border:2px solid #334155; background:#0f172a; color:#e2e8f0; font-family:inherit; font-size:.85rem; resize:vertical; outline:none; -webkit-user-select:text; user-select:text; }
+  .essay-item textarea { width:100%; min-height:200px; padding:14px; border-radius:10px; border:2px solid #334155; background:#0f172a; color:#e2e8f0; font-family:inherit; font-size:.92rem; resize:vertical; outline:none; line-height:1.6; -webkit-user-select:text; user-select:text; }
   .essay-item textarea:focus { border-color:#38bdf8; }
 
-  #submitBtn { display:block; width:100%; max-width:400px; margin:20px auto 40px; padding:16px; border-radius:12px; border:none; background:#22c55e; color:#0f172a; font-weight:700; font-size:1rem; cursor:pointer; }
-  #submitBtn:active { transform:scale(.98); }
+  #bottomNav { position:fixed; bottom:0; left:0; right:0; z-index:60; background:#1e293b; border-top:2px solid #334155; padding:10px 14px; display:none; justify-content:space-between; align-items:center; gap:8px; box-shadow:0 -4px 20px rgba(0,0,0,.4); }
+  #bottomNav button { padding:12px 18px; border-radius:10px; border:none; font-weight:700; font-size:.85rem; cursor:pointer; transition:.15s; display:flex; align-items:center; gap:6px; }
+  #bottomNav button:active { transform:scale(.96); }
+  #bottomNav button:disabled { opacity:.4; cursor:not-allowed; }
+  #btnPrev { background:#334155; color:#e2e8f0; }
+  #btnNext { background:#38bdf8; color:#0f172a; }
+  #btnGrid { background:#475569; color:#e2e8f0; padding:12px 14px; }
+  #btnSubmit { background:#22c55e; color:#0f172a; display:none; }
+
+  #gridModal { position:fixed; inset:0; background:rgba(15,23,42,.95); z-index:9200; display:none; flex-direction:column; padding:20px; }
+  #gridModal .grid-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid #334155; }
+  #gridModal .grid-head h3 { color:#38bdf8; font-size:1.1rem; }
+  #gridModal .grid-head button { background:#dc2626; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-size:.85rem; }
+  #gridModal .grid-legend { font-size:.75rem; color:#94a3b8; margin-bottom:12px; display:flex; gap:14px; flex-wrap:wrap; }
+  #gridModal .grid-legend span::before { content:'■ '; font-size:1rem; vertical-align:middle; }
+  #gridModal .grid-legend .leg-done::before { color:#22c55e; }
+  #gridModal .grid-legend .leg-current::before { color:#38bdf8; }
+  #gridModal .grid-legend .leg-empty::before { color:#334155; }
+  #gridContainer { display:grid; grid-template-columns:repeat(auto-fill, minmax(48px, 1fr)); gap:8px; overflow-y:auto; padding-bottom:20px; }
+  #gridContainer .grid-btn { aspect-ratio:1; border-radius:8px; border:2px solid #334155; background:#1e293b; color:#e2e8f0; font-weight:700; font-size:.9rem; cursor:pointer; transition:.15s; }
+  #gridContainer .grid-btn.done { background:#166534; border-color:#22c55e; color:#fff; }
+  #gridContainer .grid-btn.current { background:#0c4a6e; border-color:#38bdf8; color:#38bdf8; }
+  #gridContainer .grid-btn:active { transform:scale(.95); }
 
   #warningOverlay { position:fixed; inset:0; background:rgba(15,23,42,.97); z-index:9000; display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; }
   #warningOverlay .icon { font-size:4rem; margin-bottom:16px; }
@@ -64,6 +88,7 @@
   #resultScreen p { color:#cbd5e1; font-size:.95rem; line-height:1.6; max-width:440px; margin-bottom:8px; }
   #resultScreen .status { font-size:1rem; color:#fbbf24; font-weight:700; margin:10px 0; }
   #resultScreen .log { font-size:.8rem; color:#94a3b8; margin-top:12px; text-align:left; max-width:440px; }
+  #resultScreen .exit-btn { margin-top:20px; padding:14px 32px; border-radius:12px; border:none; background:#38bdf8; color:#0f172a; font-weight:700; font-size:1rem; cursor:pointer; }
 
   #toast { position:fixed; top:70px; left:50%; transform:translateX(-50%) translateY(-120%); background:#dc2626; color:#fff; padding:12px 20px; border-radius:10px; font-size:.85rem; font-weight:600; z-index:8000; transition:.3s; box-shadow:0 8px 24px rgba(220,38,38,.5); max-width:90vw; text-align:center; }
   #toast.show { transform:translateX(-50%) translateY(0); }
@@ -74,8 +99,10 @@
 
   @media (max-width:600px) {
     #examContent { padding:10px; }
-    .question, .essay-item { padding:12px; }
-    #lockScreen h1 { font-size:1.3rem; }
+    .question { padding:14px; }
+    .question .q-text { font-size:.92rem; }
+    .options li { padding:12px; font-size:.86rem; }
+    #bottomNav button { padding:10px 14px; font-size:.8rem; }
   }
 </style>
 </head>
@@ -91,11 +118,11 @@
   <div class="rules">
     <strong style="color:#f87171;">⚠️ ATURAN UJIAN:</strong>
     <ul>
-      <li>Ujian berjalan dalam mode <b>fullscreen</b>.</li>
+      <li>1 halaman = 1 soal. Gunakan tombol <b>← / →</b>.</li>
+      <li>Klik tombol <b>☰</b> untuk lompat ke soal tertentu.</li>
+      <li>Jawaban tersimpan otomatis — tidak akan hilang.</li>
       <li>Keluar fullscreen / pindah tab = <b>pelanggaran</b>.</li>
       <li>3 pelanggaran = ujian <b>otomatis dikumpulkan</b>.</li>
-      <li>Copy-paste, klik kanan, DevTools <b>diblokir</b>.</li>
-      <li>Waktu habis = ujian <b>otomatis dikumpulkan</b>.</li>
     </ul>
   </div>
 </div>
@@ -108,20 +135,38 @@
   <div class="timer" id="timerDisplay">60:00</div>
 </div>
 
-<div id="examContent">
-  <div class="kop">
-    <h1>ULANGAN HARIAN</h1>
-    <h2>Bahasa Indonesia — Teks Berita</h2>
-    <p>Kelas 11.3 · 60 Menit</p>
+<div id="progressBarWrap" style="display:none;">
+  <div class="labels">
+    <span>Soal <b id="currentNum">1</b> dari <b id="totalNum">30</b></span>
+    <span>Terjawab: <b id="answeredCount">0</b></span>
   </div>
+  <div id="progressBar"><div id="progressFill"></div></div>
+</div>
 
-  <div class="section-title">BAGIAN A — PILIHAN GANDA (25 Soal)</div>
-  <div id="pgContainer"></div>
+<div id="examContent">
+  <div class="question-page active" id="questionPage">
+    <div class="question" id="questionBox"></div>
+  </div>
+</div>
 
-  <div class="section-title">BAGIAN B — URAIAN (5 Soal)</div>
-  <div id="essayContainer"></div>
+<div id="bottomNav">
+  <button id="btnPrev" disabled>← Sebelumnya</button>
+  <button id="btnGrid" title="Daftar Soal">☰</button>
+  <button id="btnNext">Berikutnya →</button>
+  <button id="btnSubmit">✅ Selesai & Kumpulkan</button>
+</div>
 
-  <button id="submitBtn">✅ KUMPULKAN JAWABAN</button>
+<div id="gridModal">
+  <div class="grid-head">
+    <h3>📋 Daftar Soal</h3>
+    <button id="gridClose">✕ Tutup</button>
+  </div>
+  <div class="grid-legend">
+    <span class="leg-done">Sudah dijawab</span>
+    <span class="leg-current">Sedang dibuka</span>
+    <span class="leg-empty">Belum dijawab</span>
+  </div>
+  <div id="gridContainer"></div>
 </div>
 
 <div id="warningOverlay">
@@ -137,6 +182,7 @@
   <p>Jawaban Anda telah dikirim ke server.</p>
   <div class="status" id="resultStatus">Menunggu konfirmasi server...</div>
   <div class="log" id="resultLog"></div>
+  <button class="exit-btn" id="exitBtn" style="display:none;">🚪 Keluar dari Ujian</button>
 </div>
 
 <div id="toast"></div>
@@ -149,6 +195,14 @@
 <script src="config.js"></script>
 
 <script>
+/* ============================================================
+   DATA SOAL — TIDAK DIACAK, URUTAN TETAP
+   Teks bacaan sudah disertakan di dalam soal terkait.
+   ============================================================ */
+const TEKS_ABDIKASI = `<b>Pemerintah Siapkan Proses Abdikasi</b><br><br>Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan.<br><br>Raja Juan Carlos, Senin, mengumumkan akan turun takhta, membuka jalan bagi putranya, Pangeran Felipe, untuk menggantikannya. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu. Pengunjuk rasa menuntut sebuah referendum mengenai lembaga raja.<br><br>Sampai jauh malam setelah pengumuman turun takhta raja itu pada Senin, ribuan orang memenuhi Lapangan Puerta del Sol, Madrid. Serangkaian demonstrasi juga diadakan di kota-kota besar di seluruh negeri.<br><br>Sehari setelah pengumuman abdikasi itu, Perdana Menteri Mariano Rajoy memimpin sidang luar biasa kabinet pada tengah hari untuk membuat sebuah undang-undang turun takhta, yang kemudian harus disetujui oleh parlemen. UU itu, yang bisa sampai empat pekan untuk disetujui menurut media Spanyol, akan menutup tirai pemerintahan raja berusia 76 tahun itu, yang terkena skandal pada akhir masa berkuasanya.`;
+
+const TEKS_UN = `<b>Jadikan UN Seperti Ingin Selfie</b><br><br>1) Metrotvnews.com, Jakarta: Kepala Pusat Penilaian Pendidikan Kemendikbud, Nizam, mengimbau supaya anak-anak tidak menganggap Ujian Nasional (UN) sebagai momok yang menakutkan. Jadikan UN sebagai moment ketika ingin selfie.<br><br>2) "Jadi, kita ingin anak-anak tidak menjadikan UN sebagai momok. Akan tetapi, anggap UN itu seperti mau selfie-lah," kata Nizam dalam program "Trending Topic Metro TV," Kamis (29/1/2015).<br><br>3) Untuk menjadikan moment UN dengan riang sama seperti selfie, UN tahun 2015 tidak lagi dijadikan syarat kelulusan siswa. Namun, semua siswa tetap harus mengikuti pelaksanaan ujian.<br><br>4) "Jadi, boleh bergembira sekarang, UN tahun 2015 insyaallah tidak lagi menjadi syarat kelulusan. Pemerintah melakukan pemetaan dari capaian siswa," imbuh Nizam.<br><br>5) Menurut Nizam, UN hanya bertujuan untuk mengukur standar kompetensi kelulusan setiap siswa. Akan tetapi, kelulusan tersebut sepenuhnya diserahkan kepada setiap sekolah. Proses penilaian anak sudah dilakukan sejak awal masuk jenjang sekolah. Jadi, sekolah mengetahui kemampuan anak didiknya. Sementara itu, tugas pemerintah adalah melihat ketercapaian standar dari kemampuan anak tersebut.`;
+
 const soalPG = [
   { q:"Peristiwa yang tidak layak dijadikan berita adalah …. ", o:["anak jatuh dari sepeda","kecelakaan beruntun di Tol Cipularang","demonstrasi Pegawai Negeri","kejuaraan balap motor","Indonesia juara olimpiade"] },
   { q:"Perhatikan langkah-langkah berikut!<br><span style='display:block;margin-left:12px'>1) Temukan peristiwa atau kejadian<br>2) Pencatatan informasi penting<br>3) Pelaksanaan wawancara<br>4) Pencarian sumber berita<br>5) Penyusunan berita</span>Urutan langkah-langkah penyusunan berita yang tepat adalah …. ", o:["1) – 2) – 3) – 4) – 5)","1) – 3) – 2) – 4) – 5)","1) – 4) – 2) – 3) – 5)","1) – 4) – 3) – 2) – 5)","4) – 1) – 3) – 2) – 5)"] },
@@ -159,20 +213,20 @@ const soalPG = [
   { q:"Perhatikan kalimat berikut!<span class='teks'>\"Tujuan perubahan UN adalah membentuk generasi pembelajar yang berintegritas,\" ujar Anies di Kantor Kemendikbud, Jumat (23/1/2015).</span>Bentuk kalimat tidak langsung berdasarkan kalimat langsung di atas adalah …. ", o:["Tujuan perubahan UN adalah membentuk generasi pembelajar yang berintegritas, ujar Anies di Kantor Kemendikbud, Jumat (23/1/2015).","Menurut Mendikbud, Anies Baswedan, tujuan perubahan UN adalah membentuk generasi pembelajar yang berintegritas.","Tujuan perubahan UN adalah membentuk generasi pembelajar yang berintegritas. \"ujar Anies di Kantor Kemendikbud, Jumat (23/1/2015)\".","Menurut Anies, \"Tujuan perubahan UN adalah membentuk generasi pembelajar yang berintegritas,\" ujar Anies di Kantor Kemendikbud, Jumat (23/1/2015).","Anies berujar bahwa Tujuan perubahan UN adalah membentuk generasi pembelajar yang berintegritas, di Kantor Kemendikbud, Jumat (23/1/2015)."] },
   { q:"Perhatikan kalimat berikut!<span class='teks'>Komisioner KPAI, Susanto, mengatakan bahwa Indonesia harus bebas dari narkoba. Keluarga dan sekolah harus menjadi proteksi pertama dan utama dari kejahatan narkoba.</span>Bentuk kalimat langsung dari kalimat tidak langsung di atas adalah …. ", o:["\"Indonesia harus bebas dari narkoba. Keluarga dan sekolah harus menjadi proteksi pertama dan utama dari kejahatan narkoba,\" kata Komisioner KPAI, Susanto kepada Antara News, Senin (23/1/2015).","Komisioner KPAI berujar, \"Indonesia harus bebas dari narkoba. Keluarga dan sekolah harus menjadi proteksi pertama dan utama dari kejahatan narkoba.\"","Kata Susanto, \"Indonesia harus bebas dari narkoba. Keluarga dan sekolah harus menjadi proteksi pertama dan utama dari kejahatan narkoba,\" ujar Komisioner KPAI.","\"Indonesia harus bebas dari narkoba.\" Kata KPAI. \"Keluarga dan sekolah harus menjadi proteksi pertama dan utama dari kejahatan narkoba.\"","\"Indonesia harus bebas dari narkoba. Keluarga dan sekolah harus menjadi proteksi pertama dan utama dari kejahatan narkoba.\" Ujar Susanto tersebut kepada Antara News, Senin (23/1/2015)."] },
   { q:"Perhatikan kutipan teks berikut!<span class='teks'>Imbauan akan Gunung Bromo meletus tersebut dituliskan dalam bentuk poster dan ditempel di tempat-tempat strategis agar dapat di baca oleh warga. Isinya berupa langkah-langkah yang harus ditempuh oleh masyarakat desa apabila Gunung Bromo meletus tiba-tiba.</span>Penulisan kata yang tidak baku adalah …. ", o:["imbauan","Gunung Bromo","ditempel","di baca","di tempat-tempat strategis"] },
-  { q:"Perhatikan kutipan berita berikut untuk soal nomor 10–13!<span class='teks'><b>Pemerintah Siapkan Proses Abdikasi</b><br><br>Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan.<br><br>Raja Juan Carlos, Senin, mengumumkan akan turun takhta, membuka jalan bagi putranya, Pangeran Felipe, untuk menggantikannya. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu. Pengunjuk rasa menuntut sebuah referendum mengenai lembaga raja.<br><br>Sampai jauh malam setelah pengumuman turun takhta raja itu pada Senin, ribuan orang memenuhi Lapangan Puerta del Sol, Madrid. Serangkaian demonstrasi juga diadakan di kota-kota besar di seluruh negeri.<br><br>Sehari setelah pengumuman abdikasi itu, Perdana Menteri Mariano Rajoy memimpin sidang luar biasa kabinet pada tengah hari untuk membuat sebuah undang-undang turun takhta, yang kemudian harus disetujui oleh parlemen. UU itu, yang bisa sampai empat pekan untuk disetujui menurut media Spanyol, akan menutup tirai pemerintahan raja berusia 76 tahun itu, yang terkena skandal pada akhir masa berkuasanya.</span>Makna kata <em>abdikasi</em> pada teks di atas adalah …. ", o:["penyerahan suatu masalah kepada orang banyak","voting","naik tahta","perebutan kekuasaan","turun tahta"] },
-  { q:"Unsur berita yang tidak terdapat pada lead berita tersebut adalah …. ", o:["mengapa","bagaimana","siapa","apa","di mana"] },
-  { q:"Penulisan yang tidak baku pada teks di atas adalah …. ", o:["abdikasi","paska","disetujui","mengimbau","para demonstran"] },
-  { q:"Abstraksi kutipan berita di atas adalah …. ", o:["Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Raja Juan Carlos, Senin, mengumumkan akan turun takhta, membuka jalan bagi putranya, Pangeran Felipe, untuk menggantikannya. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu.","Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan.","Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu.","Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Raja Juan Carlos, Senin, mengumumkan akan turun takhta. Namun, para demonstran tidak menghendaki penyerahan takhta.","Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan."] },
+  { q:"Perhatikan kutipan berita berikut untuk soal nomor 10–13!<span class='teks'>" + TEKS_ABDIKASI + "</span>Makna kata <em>abdikasi</em> pada teks di atas adalah …. ", o:["penyerahan suatu masalah kepada orang banyak","voting","naik tahta","perebutan kekuasaan","turun tahta"] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_ABDIKASI + "</span>Unsur berita yang tidak terdapat pada lead berita tersebut adalah …. ", o:["mengapa","bagaimana","siapa","apa","di mana"] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_ABDIKASI + "</span>Penulisan yang tidak baku pada teks di atas adalah …. ", o:["abdikasi","paska","disetujui","mengimbau","para demonstran"] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_ABDIKASI + "</span>Abstraksi kutipan berita di atas adalah …. ", o:["Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Raja Juan Carlos, Senin, mengumumkan akan turun takhta, membuka jalan bagi putranya, Pangeran Felipe, untuk menggantikannya. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu.","Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan.","Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu.","Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Raja Juan Carlos, Senin, mengumumkan akan turun takhta. Namun, para demonstran tidak menghendaki penyerahan takhta.","Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan."] },
   { q:"Dalam membaca naskah berita sebaiknya suara kita …. ", o:["lemah agar tidak cepat lelah","menurut selera kita","disesuaikan dengan tempat dan jumlah pendengar","keras agar orang di luar ruangan juga mendengar","sekeras mungkin agar jelas didengar"] },
   { q:"Agar dapat memahami pokok-pokok permasalahan yang disimak, sambil menyimak kita dapat …. ", o:["menghafal semua kalimat yang disimak","mencatat pokok permasalahan yang disimak","menulis semua hal yang disimak","mendengarkan sambil menulis","mendengarkan sambil tiduran"] },
   { q:"Pembacaan naskah berita yang tidak tepat adalah …. ", o:["penggunaan mimik yang berlebihan","menggunakan tekanan yang tepat","membaca naskah berita dengan jelas","tatapan mata lurus ke depan","sikap duduk tegap saat membaca"] },
   { q:"\"Selamat pagi para pendengar.\"<br>Kalimat sapaan di atas dibacakan oleh penyiar …. ", o:["radio","koran","internet","televisi","komputer"] },
   { q:"Meliput sebuah peristiwa yang sedang terjadi serta memberikan informasi tentang kebenaran pada publik adalah tugas …. ", o:["jurnalis","wartawan","pembaca berita","penyiaran radio","penjual koran"] },
-  { q:"Perhatikan kutipan berita berikut untuk soal nomor 19–23!<span class='teks'><b>Jadikan UN Seperti Ingin Selfie</b><br><br>1) Metrotvnews.com, Jakarta: Kepala Pusat Penilaian Pendidikan Kemendikbud, Nizam, mengimbau supaya anak-anak tidak menganggap Ujian Nasional (UN) sebagai momok yang menakutkan. Jadikan UN sebagai moment ketika ingin selfie.<br><br>2) \"Jadi, kita ingin anak-anak tidak menjadikan UN sebagai momok. Akan tetapi, anggap UN itu seperti mau selfie-lah,\" kata Nizam dalam program \"Trending Topic Metro TV,\" Kamis (29/1/2015).<br><br>3) Untuk menjadikan moment UN dengan riang sama seperti selfie, UN tahun 2015 tidak lagi dijadikan syarat kelulusan siswa. Namun, semua siswa tetap harus mengikuti pelaksanaan ujian.<br><br>4) \"Jadi, boleh bergembira sekarang, UN tahun 2015 insyaallah tidak lagi menjadi syarat kelulusan. Pemerintah melakukan pemetaan dari capaian siswa,\" imbuh Nizam.<br><br>5) Menurut Nizam, UN hanya bertujuan untuk mengukur standar kompetensi kelulusan setiap siswa. Akan tetapi, kelulusan tersebut sepenuhnya diserahkan kepada setiap sekolah. Proses penilaian anak sudah dilakukan sejak awal masuk jenjang sekolah. Jadi, sekolah mengetahui kemampuan anak didiknya. Sementara itu, tugas pemerintah adalah melihat ketercapaian standar dari kemampuan anak tersebut.</span>Informasi pokok terdapat dalam kepala atau lead berita adalah …. ", o:["Pemetaan terhadap pencapaian belajar siswa.","Kelulusan siswa ditentukan oleh sekolah terkait.","Imbauan menjadikan UN sebagai moment ketika ingin selfie.","Ajakan menghilangkan rasa takut menghadapi UN.","Imbauan menciptakan suasana riang menghadapi UN."] },
-  { q:"Tanggapan yang tepat terhadap masalah kutipan berita di atas adalah …. ", o:["Siswa takut menghadapi UN disebabkan banyak faktor, terutama tuntutan untuk mendapat nilai bagus.","Jika siswa mencapai nilai UN rendah pihak sekolah akan mendapat peringatan dari dinas pendidikan terkait.","UN tidak penting bagi siswa SMA karena nilai UN tidak bisa digunakan untuk mendaftar ke perguruan tinggi.","Berita UN bukan penentu kelulusan memberi angin segar bagi siswa yang malas belajar.","Beban sekolah semakin berat karena harus memutuskan kelulusan dan ketidaklulusan siswanya."] },
-  { q:"Abstraksi tepat berdasarkan kutipan di atas adalah …. ", o:["Kamis (29/1/2015), Kepala Pusat Penilaian Pendidikan Kemendikbud, Nizam melakukan program \"Trending Topic Metro TV\". Dalam kesempatan tersebut, Nizam mengajak semua siswa untuk melakukan selfie sebelum UN.","Saat ini faktor penentu kelulusan tidak ditentukan oleh nilai UN semata. Pihak sekolah berhak sepenuhnya menentukan kelulusan siswanya. Jadi, siswa diharapkan tidak takut dengan UN.","Ketakutan siswa dengan UN sudah berlangsung sejak lama. Siswa takut jika mendapat nilai UN rendah dan dinyatakan tidak lulus.","Dalam program \"Trending Topic Metro TV\", Kamis (29/1/2015), Nizam mengatakan semua siswa Indonesia untuk mengerjakan UN dengan semangat.","Kepala Pusat Penilaian Pendidikan Kemendikbud, Nizam, mengatakan siswa untuk tidak takut menghadapi UN. Saat ini UN bukan penentu kelulusan. UN hanya digunakan sebagai alat ukur pencapaian siswa. Pihak yang menentukan kelulusan adalah sekolah."] },
-  { q:"Verba mental yang tidak terdapat pada paragraf ke-5 adalah …. ", o:["melihat","mengetahui","mengukur","diserahkan","dilakukan"] },
-  { q:"Konjungsi antarkalimat yang terdapat pada paragraf ke-3 adalah …. ", o:["jadi","akan tetapi","sementara itu","namun","akibatnya"] },
+  { q:"Perhatikan kutipan berita berikut untuk soal nomor 19–23!<span class='teks'>" + TEKS_UN + "</span>Informasi pokok terdapat dalam kepala atau lead berita adalah …. ", o:["Pemetaan terhadap pencapaian belajar siswa.","Kelulusan siswa ditentukan oleh sekolah terkait.","Imbauan menjadikan UN sebagai moment ketika ingin selfie.","Ajakan menghilangkan rasa takut menghadapi UN.","Imbauan menciptakan suasana riang menghadapi UN."] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_UN + "</span>Tanggapan yang tepat terhadap masalah kutipan berita di atas adalah …. ", o:["Siswa takut menghadapi UN disebabkan banyak faktor, terutama tuntutan untuk mendapat nilai bagus.","Jika siswa mencapai nilai UN rendah pihak sekolah akan mendapat peringatan dari dinas pendidikan terkait.","UN tidak penting bagi siswa SMA karena nilai UN tidak bisa digunakan untuk mendaftar ke perguruan tinggi.","Berita UN bukan penentu kelulusan memberi angin segar bagi siswa yang malas belajar.","Beban sekolah semakin berat karena harus memutuskan kelulusan dan ketidaklulusan siswanya."] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_UN + "</span>Abstraksi tepat berdasarkan kutipan di atas adalah …. ", o:["Kamis (29/1/2015), Kepala Pusat Penilaian Pendidikan Kemendikbud, Nizam melakukan program \"Trending Topic Metro TV\". Dalam kesempatan tersebut, Nizam mengajak semua siswa untuk melakukan selfie sebelum UN.","Saat ini faktor penentu kelulusan tidak ditentukan oleh nilai UN semata. Pihak sekolah berhak sepenuhnya menentukan kelulusan siswanya. Jadi, siswa diharapkan tidak takut dengan UN.","Ketakutan siswa dengan UN sudah berlangsung sejak lama. Siswa takut jika mendapat nilai UN rendah dan dinyatakan tidak lulus.","Dalam program \"Trending Topic Metro TV\", Kamis (29/1/2015), Nizam mengatakan semua siswa Indonesia untuk mengerjakan UN dengan semangat.","Kepala Pusat Penilaian Pendidikan Kemendikbud, Nizam, mengatakan siswa untuk tidak takut menghadapi UN. Saat ini UN bukan penentu kelulusan. UN hanya digunakan sebagai alat ukur pencapaian siswa. Pihak yang menentukan kelulusan adalah sekolah."] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_UN + "</span>Verba mental yang tidak terdapat pada paragraf ke-5 adalah …. ", o:["melihat","mengetahui","mengukur","diserahkan","dilakukan"] },
+  { q:"Perhatikan kutipan berita berikut!<span class='teks'>" + TEKS_UN + "</span>Konjungsi antarkalimat yang terdapat pada paragraf ke-3 adalah …. ", o:["jadi","akan tetapi","sementara itu","namun","akibatnya"] },
   { q:"Cermatilah teks berikut!<span class='teks'>Gempa yang mengguncang Dompu ini terjadi sedikitnya empat kali. Gempa pertama pukul 00.02 WITA berkekuatan 6,7 SR pada kedalaman 50 km, disusul gempa kedua pukul 00.52 WITA berkekuatan 4,9 SR pada kedalaman 6,6 km dan berpusat di selatan Dompu.</span>Kutipan berita di atas dalam struktur berita merupakan bagian …. ", o:["judul","lead","tubuh","tanggal","teras"] },
   { q:"Berita bersifat aktual dan faktual, artinya …. ", o:["tajam dan tepercaya","menyajikan fakta yang hangat","selalu terdepan dalam informasi","menginformasikan peristiwa hangat","menyajikan fakta"] }
 ];
@@ -185,20 +239,33 @@ const soalEssay = [
   "Mengapa kita harus bersikap kritis dalam menerima berita? Jelaskan!"
 ];
 
+/* ============================================================
+   STATE
+   ============================================================ */
 let nama="", kelas="", token="", violations=0;
 let maxViolations = window.MAX_VIOLATIONS || 3;
 let timeLeft = (window.DURASI_MENIT || 60) * 60;
 let timerInterval = null, examActive = false;
 let jawabanPG = {}, jawabanEssay = {}, violationLog = [];
+let semuaSoal = [], currentIndex = 0;
 
-function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+/* ============================================================
+   UTILITAS
+   ============================================================ */
 function showToast(m,d=2500){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove('show'),d);}
 function formatTime(s){const m=Math.floor(s/60).toString().padStart(2,'0');const ss=(s%60).toString().padStart(2,'0');return `${m}:${ss}`;}
 
+/* ============================================================
+   ANTI-CHEAT
+   ============================================================ */
 function catatPelanggaran(jenis){
   violations++; violationLog.push(`[${new Date().toLocaleTimeString('id-ID')}] ${jenis}`);
   document.getElementById('hdrViolation').textContent = violations;
-  if(violations >= maxViolations){ showToast('🚫 Pelanggaran maksimal! Ujian dikumpulkan otomatis.',3000); setTimeout(()=>submitUjian(true),1200); return; }
+  if(violations >= maxViolations){
+    showToast('🚫 Pelanggaran maksimal! Ujian dikumpulkan otomatis.',3000);
+    setTimeout(()=>submitUjian(true),1200);
+    return;
+  }
   const ov=document.getElementById('warningOverlay');
   const titles={fullscreen:'KELUAR DARI FULLSCREEN!',tabswitch:'PINDAH TAB / APLIKASI!',copy:'COPY DIBLOKIR!',rightclick:'KLIK KANAN DIBLOKIR!',devtools:'DEVTOOLS DIBLOKIR!'};
   const msgs={fullscreen:'Anda terdeteksi keluar dari mode fullscreen.',tabswitch:'Anda terdeteksi berpindah tab atau keluar dari halaman ujian.',copy:'Aktivitas menyalin diblokir.',rightclick:'Klik kanan dinonaktifkan.',devtools:'Upaya membuka Developer Tools terdeteksi dan diblokir.'};
@@ -209,110 +276,319 @@ function catatPelanggaran(jenis){
 }
 function masukFullscreen(){const el=document.documentElement;const r=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;if(r)r.call(el).catch(()=>{});}
 
-function buildSoal(){
-  const pgShuffled = shuffle(soalPG.map((s,i)=>({...s,idxAsli:i})));
-  const pgContainer = document.getElementById('pgContainer');
-  pgContainer.innerHTML='';
-  pgShuffled.forEach((s,i)=>{
-    const div=document.createElement('div');
-    div.className='question';
-    const huruf=['A','B','C','D','E'];
-    let optHTML='';
-    s.o.forEach((opt,j)=>{optHTML+=`<li data-qid="${s.idxAsli}" data-opt="${j}"><span class="label">${huruf[j]}</span><span>${opt}</span></li>`;});
-    div.innerHTML=`<div class="q-text"><span class="q-number">${i+1}.</span> ${s.q}</div><ul class="options">${optHTML}</ul>`;
-    pgContainer.appendChild(div);
-  });
-  const essayContainer = document.getElementById('essayContainer');
-  essayContainer.innerHTML='';
-  soalEssay.forEach((q,i)=>{
-    const div=document.createElement('div');
-    div.className='essay-item';
-    div.innerHTML=`<div class="q-text"><span class="q-number">${i+1}.</span> ${q}</div><textarea data-essay="${i}" placeholder="Tulis jawaban Anda..." maxlength="2000"></textarea>`;
-    essayContainer.appendChild(div);
-  });
-  document.querySelectorAll('.options li').forEach(li=>{
-    li.addEventListener('click',()=>{
-      const qid=li.dataset.qid;
-      document.querySelectorAll(`.options li[data-qid="${qid}"]`).forEach(x=>x.classList.remove('selected'));
-      li.classList.add('selected');
-      jawabanPG[qid]=parseInt(li.dataset.opt);
-      simpanProgress();
-    });
-  });
-  document.querySelectorAll('textarea[data-essay]').forEach(ta=>{
-    ta.addEventListener('input',()=>{jawabanEssay[ta.dataset.essay]=ta.value;simpanProgress();});
-  });
+/* ============================================================
+   BUILD SOAL — PG dulu (25), lalu Essay (5)
+   ============================================================ */
+function buildSemuaSoal(){
+  const pgArr = soalPG.map((s,i)=>({type:'pg', idxAsli:i, data:s}));
+  const essayArr = soalEssay.map((q,i)=>({type:'essay', idxAsli:i, data:{q}}));
+  semuaSoal = [...pgArr, ...essayArr];
 }
 
-function simpanProgress(){try{localStorage.setItem('ujian_progress',JSON.stringify({jawabanPG,jawabanEssay,nama,kelas,timeLeft}));}catch(e){}}
-function muatProgress(){try{const p=JSON.parse(localStorage.getItem('ujian_progress')||'null');if(p){jawabanPG=p.jawabanPG||{};jawabanEssay=p.jawabanEssay||{};}}catch(e){}}
+/* ============================================================
+   RENDER SOAL
+   ============================================================ */
+function renderSoal(){
+  const soal = semuaSoal[currentIndex];
+  const box = document.getElementById('questionBox');
+  const huruf = ['A','B','C','D','E'];
 
+  document.getElementById('currentNum').textContent = currentIndex + 1;
+  document.getElementById('totalNum').textContent = semuaSoal.length;
+  document.getElementById('answeredCount').textContent = hitungTerjawab();
+  document.getElementById('progressFill').style.width = ((currentIndex+1)/semuaSoal.length*100)+'%';
+
+  if(soal.type === 'pg'){
+    const s = soal.data, qid = soal.idxAsli;
+    let optHTML = '';
+    s.o.forEach((o,j)=>{
+      const sel = jawabanPG[qid] === j ? 'selected' : '';
+      optHTML += `<li data-qid="${qid}" data-opt="${j}" class="${sel}"><span class="label">${huruf[j]}</span><span>${o}</span></li>`;
+    });
+    box.innerHTML = `
+      <div class="q-header">
+        <span class="q-badge">SOAL ${currentIndex+1}</span>
+        <span class="q-type">Pilihan Ganda</span>
+      </div>
+      <div class="q-text"><span class="q-number">${currentIndex+1}.</span> ${s.q}</div>
+      <ul class="options">${optHTML}</ul>`;
+    box.querySelectorAll('.options li').forEach(li=>{
+      li.addEventListener('click',()=>{
+        const q = li.dataset.qid;
+        box.querySelectorAll(`.options li[data-qid="${q}"]`).forEach(x=>x.classList.remove('selected'));
+        li.classList.add('selected');
+        jawabanPG[q] = parseInt(li.dataset.opt);
+        simpanProgress();
+        updateProgress();
+      });
+    });
+  } else {
+    const s = soal.data, eid = soal.idxAsli;
+    box.innerHTML = `
+      <div class="q-header">
+        <span class="q-badge">SOAL ${currentIndex+1}</span>
+        <span class="q-type">Uraian</span>
+      </div>
+      <div class="q-text"><span class="q-number">${currentIndex+1}.</span> ${s.q}</div>
+      <div class="essay-item">
+        <textarea data-essay="${eid}" placeholder="Tulis jawaban Anda..." maxlength="2000">${jawabanEssay[eid] || ''}</textarea>
+      </div>`;
+    const ta = box.querySelector('textarea');
+    ta.addEventListener('input',()=>{
+      jawabanEssay[eid] = ta.value;
+      simpanProgress();
+      updateProgress();
+    });
+  }
+
+  document.getElementById('btnPrev').disabled = currentIndex === 0;
+  const last = currentIndex === semuaSoal.length - 1;
+  document.getElementById('btnNext').style.display = last ? 'none' : 'flex';
+  document.getElementById('btnSubmit').style.display = last ? 'flex' : 'none';
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function hitungTerjawab(){
+  let n = 0;
+  n += Object.keys(jawabanPG).filter(k => jawabanPG[k] !== undefined).length;
+  n += Object.values(jawabanEssay).filter(v => v && v.trim()).length;
+  return n;
+}
+function updateProgress(){
+  document.getElementById('answeredCount').textContent = hitungTerjawab();
+  document.getElementById('progressFill').style.width = ((currentIndex+1)/semuaSoal.length*100)+'%';
+}
+
+/* ============================================================
+   SIMPAN PROGRESS — pakai localStorage
+   ============================================================ */
+function simpanProgress(){
+  try {
+    localStorage.setItem('ujian_progress_11_3', JSON.stringify({
+      jawabanPG, jawabanEssay, nama, kelas, currentIndex, timeLeft
+    }));
+  } catch(e){}
+}
+function muatProgress(){
+  try {
+    const p = JSON.parse(localStorage.getItem('ujian_progress_11_3') || 'null');
+    if(p){
+      jawabanPG = p.jawabanPG || {};
+      jawabanEssay = p.jawabanEssay || {};
+      if(typeof p.currentIndex === 'number') currentIndex = p.currentIndex;
+    }
+  } catch(e){}
+}
+
+/* ============================================================
+   TIMER
+   ============================================================ */
 function mulaiTimer(){
-  timerInterval=setInterval(()=>{
+  timerInterval = setInterval(()=>{
     timeLeft--;
-    const d=document.getElementById('timerDisplay');
-    d.textContent=formatTime(timeLeft);
-    if(timeLeft<=300)d.classList.add('danger');
-    if(timeLeft<=0){clearInterval(timerInterval);showToast('⏰ Waktu habis!',3000);setTimeout(()=>submitUjian(true),1200);}
-    if(timeLeft%10===0)simpanProgress();
+    const d = document.getElementById('timerDisplay');
+    d.textContent = formatTime(timeLeft);
+    if(timeLeft <= 300) d.classList.add('danger');
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      showToast('⏰ Waktu habis!',3000);
+      setTimeout(()=>submitUjian(true),1200);
+    }
+    if(timeLeft % 10 === 0) simpanProgress();
   },1000);
 }
 
+/* ============================================================
+   SUBMIT — kirim ke server, lalu keluar
+   ============================================================ */
 async function submitUjian(auto=false){
-  if(!examActive)return; examActive=false; clearInterval(timerInterval);
-  if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});
+  if(!examActive) return;
+  examActive = false;
+  clearInterval(timerInterval);
+  if(document.fullscreenElement) document.exitFullscreen?.().catch(()=>{});
+
   document.getElementById('resultScreen').style.display='flex';
-  const s=document.getElementById('resultStatus');
-  const l=document.getElementById('resultLog');
-  s.textContent='⏳ Mengirim jawaban...';
-  l.innerHTML = violationLog.length?'<b>Log Pelanggaran:</b><br>'+violationLog.join('<br>'):'<i>Tidak ada pelanggaran.</i>';
-  const payload={nama,kelas,token,jawabanPG,jawabanEssay,violations,violationLog,auto,waktuKirim:new Date().toISOString()};
-  const URL=window.SERVER_URL||'';
-  if(!URL||URL.includes('GANTI_DENGAN_URL')){s.textContent='⚠️ URL server belum diisi.';s.style.color='#f87171';return;}
-  try{
-    const res=await fetch(URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
-    const h=await res.json();
-    if(h&&h.status==='ok'){s.textContent='✅ Jawaban berhasil dikirim.';s.style.color='#22c55e';}
-    else{s.textContent='⚠️ Server: '+(h.message||'unknown');s.style.color='#fbbf24';}
-  }catch(err){s.textContent='❌ Gagal kirim ke server.';s.style.color='#f87171';try{const p=JSON.parse(localStorage.getItem('ujian_pending')||'[]');p.push(payload);localStorage.setItem('ujian_pending',JSON.stringify(p));}catch(e){}}
-  localStorage.removeItem('ujian_progress');
+  const s = document.getElementById('resultStatus');
+  const l = document.getElementById('resultLog');
+  s.textContent = '⏳ Mengirim jawaban...';
+  l.innerHTML = violationLog.length
+    ? '<b>Log Pelanggaran:</b><br>' + violationLog.join('<br>')
+    : '<i>Tidak ada pelanggaran. 👍</i>';
+
+  const payload = { nama, kelas, token, jawabanPG, jawabanEssay, violations, violationLog, auto, waktuKirim:new Date().toISOString() };
+  const URL = window.SERVER_URL || '';
+
+  if(!URL || URL.includes('GANTI_DENGAN_URL')){
+    s.textContent = '⚠️ URL server belum diisi.';
+    s.style.color = '#f87171';
+    document.getElementById('exitBtn').style.display='inline-block';
+    return;
+  }
+
+  try {
+    const res = await fetch(URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    const h = await res.json();
+    if(h && h.status === 'ok'){
+      s.textContent = '✅ Jawaban berhasil dikirim.';
+      s.style.color = '#22c55e';
+      // Hapus progress
+      localStorage.removeItem('ujian_progress_11_3');
+      // Tampilkan tombol keluar
+      document.getElementById('exitBtn').style.display='inline-block';
+    } else {
+      s.textContent = '⚠️ Server: ' + (h.message || 'unknown');
+      s.style.color = '#fbbf24';
+      document.getElementById('exitBtn').style.display='inline-block';
+    }
+  } catch(err){
+    s.textContent = '❌ Gagal kirim ke server.';
+    s.style.color = '#f87171';
+    // Simpan ke pending — biar bisa dikirim nanti
+    try {
+      const p = JSON.parse(localStorage.getItem('ujian_pending') || '[]');
+      p.push(payload);
+      localStorage.setItem('ujian_pending', JSON.stringify(p));
+    } catch(e){}
+    document.getElementById('exitBtn').style.display='inline-block';
+  }
 }
 
+/* ============================================================
+   MULAI
+   ============================================================ */
 document.getElementById('startBtn').addEventListener('click',()=>{
-  nama=document.getElementById('inputNama').value.trim();
-  kelas=document.getElementById('inputKelas').value.trim();
-  token=document.getElementById('inputToken').value.trim();
-  if(!nama){alert('Nama wajib diisi!');return;}
-  if(!kelas){alert('Kelas wajib diisi!');return;}
-  document.getElementById('hdrNama').textContent=`${nama} (${kelas})`;
+  nama = document.getElementById('inputNama').value.trim();
+  kelas = document.getElementById('inputKelas').value.trim();
+  token = document.getElementById('inputToken').value.trim();
+  if(!nama){ alert('Nama wajib diisi!'); return; }
+  if(!kelas){ alert('Kelas wajib diisi!'); return; }
+
+  document.getElementById('hdrNama').textContent = `${nama} (${kelas})`;
   document.getElementById('lockScreen').style.display='none';
   document.getElementById('examHeader').style.display='flex';
+  document.getElementById('progressBarWrap').style.display='block';
   document.getElementById('examContent').style.display='block';
-  examActive=true;
+  document.getElementById('bottomNav').style.display='flex';
+
+  examActive = true;
+
+  // Muat progress lama — kalau ada, lanjut dari posisi terakhir
   muatProgress();
-  buildSoal();
+  buildSemuaSoal();
+  renderSoal();
+
   masukFullscreen();
   mulaiTimer();
-  showToast('🔒 Ujian dimulai.',3000);
+  showToast('🔒 Ujian dimulai. 1 halaman = 1 soal.',3000);
 });
 
-document.addEventListener('visibilitychange',()=>{if(examActive&&document.hidden)catatPelanggaran('tabswitch');});
-document.addEventListener('fullscreenchange',()=>{if(examActive&&!document.fullscreenElement)catatPelanggaran('fullscreen');});
-document.addEventListener('webkitfullscreenchange',()=>{if(examActive&&!document.webkitFullscreenElement)catatPelanggaran('fullscreen');});
-document.addEventListener('contextmenu',e=>{if(!examActive)return;e.preventDefault();catatPelanggaran('rightclick');});
-['copy','cut','paste'].forEach(ev=>{document.addEventListener(ev,e=>{if(!examActive)return;if(ev==='paste'&&e.target.tagName==='TEXTAREA')return;e.preventDefault();catatPelanggaran('copy');});});
-document.addEventListener('selectstart',e=>{if(!examActive)return;if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;e.preventDefault();});
-document.addEventListener('keydown',e=>{
-  if(!examActive)return; const k=e.key.toLowerCase();
-  if(e.key==='F12'){e.preventDefault();catatPelanggaran('devtools');return;}
-  if(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(k)){e.preventDefault();catatPelanggaran('devtools');return;}
-  if(e.ctrlKey&&k==='u'){e.preventDefault();catatPelanggaran('devtools');return;}
-  if(e.ctrlKey&&['c','x','v','a','p','s'].includes(k)){if(e.target.tagName==='TEXTAREA'&&['c','x','v','a'].includes(k))return;e.preventDefault();if(['c','x','v'].includes(k))catatPelanggaran('copy');}
+/* ============================================================
+   NAVIGASI
+   ============================================================ */
+document.getElementById('btnPrev').addEventListener('click',()=>{
+  if(currentIndex > 0){ currentIndex--; renderSoal(); simpanProgress(); }
 });
-setInterval(()=>{if(!examActive)return;const w=window.outerWidth-window.innerWidth;const h=window.outerHeight-window.innerHeight;if(w>200||h>200)catatPelanggaran('devtools');},2000);
-window.addEventListener('beforeunload',e=>{if(examActive){e.preventDefault();e.returnValue='';return '';}});
+document.getElementById('btnNext').addEventListener('click',()=>{
+  if(currentIndex < semuaSoal.length - 1){ currentIndex++; renderSoal(); simpanProgress(); }
+});
+document.getElementById('btnGrid').addEventListener('click',()=>{
+  buildGrid();
+  document.getElementById('gridModal').style.display='flex';
+});
+document.getElementById('gridClose').addEventListener('click',()=>{
+  document.getElementById('gridModal').style.display='none';
+});
+document.getElementById('btnSubmit').addEventListener('click',()=>{
+  const belum = semuaSoal.length - hitungTerjawab();
+  let msg = 'Kumpulkan jawaban sekarang?';
+  if(belum > 0) msg = `Masih ada ${belum} soal belum dijawab. Tetap kumpulkan?`;
+  if(confirm(msg)) submitUjian(false);
+});
+
+document.getElementById('exitBtn').addEventListener('click',()=>{
+  // Tutup halaman — atau redirect ke halaman kosong
+  window.location.href = 'about:blank';
+});
+
+/* ============================================================
+   GRID NAVIGASI
+   ============================================================ */
+function buildGrid(){
+  const g = document.getElementById('gridContainer');
+  g.innerHTML = '';
+  semuaSoal.forEach((s,i)=>{
+    const b = document.createElement('button');
+    b.className = 'grid-btn';
+    b.textContent = i+1;
+    let done = false;
+    if(s.type === 'pg') done = jawabanPG[s.idxAsli] !== undefined;
+    else done = !!(jawabanEssay[s.idxAsli] && jawabanEssay[s.idxAsli].trim());
+    if(done) b.classList.add('done');
+    if(i === currentIndex) b.classList.add('current');
+    b.addEventListener('click',()=>{
+      currentIndex = i;
+      document.getElementById('gridModal').style.display='none';
+      renderSoal();
+      simpanProgress();
+    });
+    g.appendChild(b);
+  });
+}
+
+/* ============================================================
+   EVENT ANTI-CHEAT
+   ============================================================ */
+document.addEventListener('visibilitychange',()=>{ if(examActive && document.hidden) catatPelanggaran('tabswitch'); });
+document.addEventListener('fullscreenchange',()=>{ if(examActive && !document.fullscreenElement) catatPelanggaran('fullscreen'); });
+document.addEventListener('webkitfullscreenchange',()=>{ if(examActive && !document.webkitFullscreenElement) catatPelanggaran('fullscreen'); });
+document.addEventListener('contextmenu',e=>{ if(!examActive) return; e.preventDefault(); catatPelanggaran('rightclick'); });
+['copy','cut','paste'].forEach(ev=>{
+  document.addEventListener(ev,e=>{
+    if(!examActive) return;
+    if(ev === 'paste' && e.target.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    catatPelanggaran('copy');
+  });
+});
+document.addEventListener('selectstart',e=>{
+  if(!examActive) return;
+  if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  e.preventDefault();
+});
+document.addEventListener('keydown',e=>{
+  if(!examActive) return;
+  const k = e.key.toLowerCase();
+  if(e.key === 'F12'){ e.preventDefault(); catatPelanggaran('devtools'); return; }
+  if(e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)){ e.preventDefault(); catatPelanggaran('devtools'); return; }
+  if(e.ctrlKey && k === 'u'){ e.preventDefault(); catatPelanggaran('devtools'); return; }
+  if(e.ctrlKey && ['c','x','v','a','p','s'].includes(k)){
+    if(e.target.tagName === 'TEXTAREA' && ['c','x','v','a'].includes(k)) return;
+    e.preventDefault();
+    if(['c','x','v'].includes(k)) catatPelanggaran('copy');
+  }
+});
+setInterval(()=>{
+  if(!examActive) return;
+  const w = window.outerWidth - window.innerWidth;
+  const h = window.outerHeight - window.innerHeight;
+  if(w > 200 || h > 200) catatPelanggaran('devtools');
+},2000);
+window.addEventListener('beforeunload',e=>{
+  if(examActive){ e.preventDefault(); e.returnValue=''; return ''; }
+});
 history.pushState(null,null,location.href);
-window.addEventListener('popstate',()=>{if(examActive){history.pushState(null,null,location.href);catatPelanggaran('tabswitch');showToast('⚠️ Tombol back dinonaktifkan.',2000);}});
+window.addEventListener('popstate',()=>{
+  if(examActive){
+    history.pushState(null,null,location.href);
+    catatPelanggaran('tabswitch');
+    showToast('⚠️ Tombol back dinonaktifkan.',2000);
+  }
+});
 document.addEventListener('gesturestart',e=>e.preventDefault());
 </script>
 </body>
