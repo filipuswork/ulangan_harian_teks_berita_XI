@@ -197,7 +197,6 @@
 <script>
 /* ============================================================
    DATA SOAL — TIDAK DIACAK, URUTAN TETAP
-   Teks bacaan sudah disertakan di dalam soal terkait.
    ============================================================ */
 const TEKS_ABDIKASI = `<b>Pemerintah Siapkan Proses Abdikasi</b><br><br>Madrid, Selasa – Pemerintah Spanyol, Selasa (3/6), memulai penggantian raja untuk pertama kalinya dalam sejarah paska Franco. Sementara ribuan orang anti kerajaan turun ke jalan di seluruh negeri mengimbau diadakannya referendum mengenai kerajaan.<br><br>Raja Juan Carlos, Senin, mengumumkan akan turun takhta, membuka jalan bagi putranya, Pangeran Felipe, untuk menggantikannya. Namun, para demonstran tidak menghendaki penyerahan takhta kepada Felipe yang akan bergelar Raja Felipe VI itu. Pengunjuk rasa menuntut sebuah referendum mengenai lembaga raja.<br><br>Sampai jauh malam setelah pengumuman turun takhta raja itu pada Senin, ribuan orang memenuhi Lapangan Puerta del Sol, Madrid. Serangkaian demonstrasi juga diadakan di kota-kota besar di seluruh negeri.<br><br>Sehari setelah pengumuman abdikasi itu, Perdana Menteri Mariano Rajoy memimpin sidang luar biasa kabinet pada tengah hari untuk membuat sebuah undang-undang turun takhta, yang kemudian harus disetujui oleh parlemen. UU itu, yang bisa sampai empat pekan untuk disetujui menurut media Spanyol, akan menutup tirai pemerintahan raja berusia 76 tahun itu, yang terkena skandal pada akhir masa berkuasanya.`;
 
@@ -239,9 +238,6 @@ const soalEssay = [
   "Mengapa kita harus bersikap kritis dalam menerima berita? Jelaskan!"
 ];
 
-/* ============================================================
-   STATE
-   ============================================================ */
 let nama="", kelas="", token="", violations=0;
 let maxViolations = window.MAX_VIOLATIONS || 3;
 let timeLeft = (window.DURASI_MENIT || 60) * 60;
@@ -249,23 +245,13 @@ let timerInterval = null, examActive = false;
 let jawabanPG = {}, jawabanEssay = {}, violationLog = [];
 let semuaSoal = [], currentIndex = 0;
 
-/* ============================================================
-   UTILITAS
-   ============================================================ */
 function showToast(m,d=2500){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove('show'),d);}
 function formatTime(s){const m=Math.floor(s/60).toString().padStart(2,'0');const ss=(s%60).toString().padStart(2,'0');return `${m}:${ss}`;}
 
-/* ============================================================
-   ANTI-CHEAT
-   ============================================================ */
 function catatPelanggaran(jenis){
   violations++; violationLog.push(`[${new Date().toLocaleTimeString('id-ID')}] ${jenis}`);
   document.getElementById('hdrViolation').textContent = violations;
-  if(violations >= maxViolations){
-    showToast('🚫 Pelanggaran maksimal! Ujian dikumpulkan otomatis.',3000);
-    setTimeout(()=>submitUjian(true),1200);
-    return;
-  }
+  if(violations >= maxViolations){ showToast('🚫 Pelanggaran maksimal! Ujian dikumpulkan otomatis.',3000); setTimeout(()=>submitUjian(true),1200); return; }
   const ov=document.getElementById('warningOverlay');
   const titles={fullscreen:'KELUAR DARI FULLSCREEN!',tabswitch:'PINDAH TAB / APLIKASI!',copy:'COPY DIBLOKIR!',rightclick:'KLIK KANAN DIBLOKIR!',devtools:'DEVTOOLS DIBLOKIR!'};
   const msgs={fullscreen:'Anda terdeteksi keluar dari mode fullscreen.',tabswitch:'Anda terdeteksi berpindah tab atau keluar dari halaman ujian.',copy:'Aktivitas menyalin diblokir.',rightclick:'Klik kanan dinonaktifkan.',devtools:'Upaya membuka Developer Tools terdeteksi dan diblokir.'};
@@ -276,23 +262,16 @@ function catatPelanggaran(jenis){
 }
 function masukFullscreen(){const el=document.documentElement;const r=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;if(r)r.call(el).catch(()=>{});}
 
-/* ============================================================
-   BUILD SOAL — PG dulu (25), lalu Essay (5)
-   ============================================================ */
 function buildSemuaSoal(){
   const pgArr = soalPG.map((s,i)=>({type:'pg', idxAsli:i, data:s}));
   const essayArr = soalEssay.map((q,i)=>({type:'essay', idxAsli:i, data:{q}}));
   semuaSoal = [...pgArr, ...essayArr];
 }
 
-/* ============================================================
-   RENDER SOAL
-   ============================================================ */
 function renderSoal(){
   const soal = semuaSoal[currentIndex];
   const box = document.getElementById('questionBox');
   const huruf = ['A','B','C','D','E'];
-
   document.getElementById('currentNum').textContent = currentIndex + 1;
   document.getElementById('totalNum').textContent = semuaSoal.length;
   document.getElementById('answeredCount').textContent = hitungTerjawab();
@@ -345,7 +324,6 @@ function renderSoal(){
   const last = currentIndex === semuaSoal.length - 1;
   document.getElementById('btnNext').style.display = last ? 'none' : 'flex';
   document.getElementById('btnSubmit').style.display = last ? 'flex' : 'none';
-
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -359,10 +337,6 @@ function updateProgress(){
   document.getElementById('answeredCount').textContent = hitungTerjawab();
   document.getElementById('progressFill').style.width = ((currentIndex+1)/semuaSoal.length*100)+'%';
 }
-
-/* ============================================================
-   SIMPAN PROGRESS — pakai localStorage
-   ============================================================ */
 function simpanProgress(){
   try {
     localStorage.setItem('ujian_progress_11_3', JSON.stringify({
@@ -381,9 +355,6 @@ function muatProgress(){
   } catch(e){}
 }
 
-/* ============================================================
-   TIMER
-   ============================================================ */
 function mulaiTimer(){
   timerInterval = setInterval(()=>{
     timeLeft--;
@@ -399,9 +370,6 @@ function mulaiTimer(){
   },1000);
 }
 
-/* ============================================================
-   SUBMIT — kirim ke server, lalu keluar
-   ============================================================ */
 async function submitUjian(auto=false){
   if(!examActive) return;
   examActive = false;
@@ -412,9 +380,7 @@ async function submitUjian(auto=false){
   const s = document.getElementById('resultStatus');
   const l = document.getElementById('resultLog');
   s.textContent = '⏳ Mengirim jawaban...';
-  l.innerHTML = violationLog.length
-    ? '<b>Log Pelanggaran:</b><br>' + violationLog.join('<br>')
-    : '<i>Tidak ada pelanggaran. 👍</i>';
+  l.innerHTML = violationLog.length ? '<b>Log Pelanggaran:</b><br>' + violationLog.join('<br>') : '<i>Tidak ada pelanggaran. 👍</i>';
 
   const payload = { nama, kelas, token, jawabanPG, jawabanEssay, violations, violationLog, auto, waktuKirim:new Date().toISOString() };
   const URL = window.SERVER_URL || '';
@@ -429,16 +395,14 @@ async function submitUjian(auto=false){
   try {
     const res = await fetch(URL, {
       method:'POST',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      headers:{'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify(payload)
     });
     const h = await res.json();
     if(h && h.status === 'ok'){
       s.textContent = '✅ Jawaban berhasil dikirim.';
       s.style.color = '#22c55e';
-      // Hapus progress
       localStorage.removeItem('ujian_progress_11_3');
-      // Tampilkan tombol keluar
       document.getElementById('exitBtn').style.display='inline-block';
     } else {
       s.textContent = '⚠️ Server: ' + (h.message || 'unknown');
@@ -448,7 +412,6 @@ async function submitUjian(auto=false){
   } catch(err){
     s.textContent = '❌ Gagal kirim ke server.';
     s.style.color = '#f87171';
-    // Simpan ke pending — biar bisa dikirim nanti
     try {
       const p = JSON.parse(localStorage.getItem('ujian_pending') || '[]');
       p.push(payload);
@@ -458,9 +421,6 @@ async function submitUjian(auto=false){
   }
 }
 
-/* ============================================================
-   MULAI
-   ============================================================ */
 document.getElementById('startBtn').addEventListener('click',()=>{
   nama = document.getElementById('inputNama').value.trim();
   kelas = document.getElementById('inputKelas').value.trim();
@@ -476,48 +436,26 @@ document.getElementById('startBtn').addEventListener('click',()=>{
   document.getElementById('bottomNav').style.display='flex';
 
   examActive = true;
-
-  // Muat progress lama — kalau ada, lanjut dari posisi terakhir
   muatProgress();
   buildSemuaSoal();
   renderSoal();
-
   masukFullscreen();
   mulaiTimer();
   showToast('🔒 Ujian dimulai. 1 halaman = 1 soal.',3000);
 });
 
-/* ============================================================
-   NAVIGASI
-   ============================================================ */
-document.getElementById('btnPrev').addEventListener('click',()=>{
-  if(currentIndex > 0){ currentIndex--; renderSoal(); simpanProgress(); }
-});
-document.getElementById('btnNext').addEventListener('click',()=>{
-  if(currentIndex < semuaSoal.length - 1){ currentIndex++; renderSoal(); simpanProgress(); }
-});
-document.getElementById('btnGrid').addEventListener('click',()=>{
-  buildGrid();
-  document.getElementById('gridModal').style.display='flex';
-});
-document.getElementById('gridClose').addEventListener('click',()=>{
-  document.getElementById('gridModal').style.display='none';
-});
+document.getElementById('btnPrev').addEventListener('click',()=>{ if(currentIndex > 0){ currentIndex--; renderSoal(); simpanProgress(); } });
+document.getElementById('btnNext').addEventListener('click',()=>{ if(currentIndex < semuaSoal.length - 1){ currentIndex++; renderSoal(); simpanProgress(); } });
+document.getElementById('btnGrid').addEventListener('click',()=>{ buildGrid(); document.getElementById('gridModal').style.display='flex'; });
+document.getElementById('gridClose').addEventListener('click',()=>{ document.getElementById('gridModal').style.display='none'; });
 document.getElementById('btnSubmit').addEventListener('click',()=>{
   const belum = semuaSoal.length - hitungTerjawab();
   let msg = 'Kumpulkan jawaban sekarang?';
   if(belum > 0) msg = `Masih ada ${belum} soal belum dijawab. Tetap kumpulkan?`;
   if(confirm(msg)) submitUjian(false);
 });
+document.getElementById('exitBtn').addEventListener('click',()=>{ window.location.href = 'about:blank'; });
 
-document.getElementById('exitBtn').addEventListener('click',()=>{
-  // Tutup halaman — atau redirect ke halaman kosong
-  window.location.href = 'about:blank';
-});
-
-/* ============================================================
-   GRID NAVIGASI
-   ============================================================ */
 function buildGrid(){
   const g = document.getElementById('gridContainer');
   g.innerHTML = '';
@@ -530,19 +468,11 @@ function buildGrid(){
     else done = !!(jawabanEssay[s.idxAsli] && jawabanEssay[s.idxAsli].trim());
     if(done) b.classList.add('done');
     if(i === currentIndex) b.classList.add('current');
-    b.addEventListener('click',()=>{
-      currentIndex = i;
-      document.getElementById('gridModal').style.display='none';
-      renderSoal();
-      simpanProgress();
-    });
+    b.addEventListener('click',()=>{ currentIndex = i; document.getElementById('gridModal').style.display='none'; renderSoal(); simpanProgress(); });
     g.appendChild(b);
   });
 }
 
-/* ============================================================
-   EVENT ANTI-CHEAT
-   ============================================================ */
 document.addEventListener('visibilitychange',()=>{ if(examActive && document.hidden) catatPelanggaran('tabswitch'); });
 document.addEventListener('fullscreenchange',()=>{ if(examActive && !document.fullscreenElement) catatPelanggaran('fullscreen'); });
 document.addEventListener('webkitfullscreenchange',()=>{ if(examActive && !document.webkitFullscreenElement) catatPelanggaran('fullscreen'); });
@@ -578,9 +508,7 @@ setInterval(()=>{
   const h = window.outerHeight - window.innerHeight;
   if(w > 200 || h > 200) catatPelanggaran('devtools');
 },2000);
-window.addEventListener('beforeunload',e=>{
-  if(examActive){ e.preventDefault(); e.returnValue=''; return ''; }
-});
+window.addEventListener('beforeunload',e=>{ if(examActive){ e.preventDefault(); e.returnValue=''; return ''; } });
 history.pushState(null,null,location.href);
 window.addEventListener('popstate',()=>{
   if(examActive){
