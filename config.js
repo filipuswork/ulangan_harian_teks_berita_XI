@@ -2,7 +2,7 @@
    KONFIGURASI UJIAN — TEKS BERITA 11.3
    ============================================================ */
 
-window.SERVER_URL = 'https://script.google.com/macros/s/AKfycbxNBZLZBx_NkXkGKYe3JdOGUrJGsEDcq7vzKSXZqWruU2Becj7v9HPdpcfKBP7_bVI5rA/exec';
+window.SERVER_URL = 'https://script.google.com/macros/s/AKfycbzkUs1jSwf1ZnfeSOLzNZnZ-gQvBq66CsTW5wA0AQzNjdpeBcO_AVxzA5TbzZmZQdr3og/exec';
 
 window.DURASI_MENIT = 60;
 
